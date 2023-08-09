@@ -1,7 +1,6 @@
 import { Database } from "../database/database.js";
 import * as inlineMarkups from "../markups/inlineMarkups.js";
-import { Markup, Input } from "telegraf";
-import fs from "fs";
+import { Input } from "telegraf";
 
 const db = new Database();
 

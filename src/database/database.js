@@ -57,6 +57,13 @@ export class Database {
         }
         
     }
+
+    getRandomBeat() {
+        return new Promise((resolve, reject) => {
+            // 3000 iq sql запрос
+            this.db.query("SELECT COUNT(*) FROM beats", (err, res, fields) => resolve( Math.floor(Math.random() * res[0]["COUNT(*)"]) ));
+        });
+    }
 }
 
 export class User {
