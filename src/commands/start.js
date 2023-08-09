@@ -6,6 +6,6 @@ import * as inlineMarkups from "../markups/inlineMarkups.js";
 const db = new Database();
 
 bot.start(ctx => {
-    db.addUser(ctx.message.from.id);
+    db.addUser(ctx);
     ctx.reply("привет", keyboardMarkups.mainButtons);
 });

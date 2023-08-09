@@ -1,6 +1,9 @@
-import { bot } from "../bot.js"
+import { bot } from "../bot.js";
 import { getBeat } from "../search/searchBeats.js";
+import { getProfile } from "../search/profile.js";
 import { Database } from "../database/database.js";
+import * as utils from "../services/utils.js";
+import * as inlineMarkups from "../markups/inlineMarkups.js";
 
 const db = new Database()
 
@@ -17,6 +20,10 @@ bot.on("text", async ctx => {
         case "Случайный бит 🎲":
             const beat_index = await db.getRandomBeat();
             getBeat(ctx, beat_index, "recent");
+            return;
+
+        case "Мой профиль 💼":
+            getProfile(ctx);
             return;
     }
 });

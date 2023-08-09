@@ -15,8 +15,21 @@ export async function pageButtons(page, type, beats) {
             Markup.button.callback(prev_button, prev_data),
             Markup.button.callback(`${page + 1}/${beats.length}`, "none"),
             Markup.button.callback(next_button, next_data)
-        ])
+        ]);
     
+        resolve(markup);
+    });
+}
+
+export async function profileButtons(user) {
+    return new Promise((resolve) => {
+        const markup = Markup.inlineKeyboard([[
+            Markup.button.callback("Изменить никнейм", "profile_set_nick", user.isVerified),
+            Markup.button.callback("Изменить ссылку на соцсеть", "profile_set_media_link", user.isVerified),
+        ], [
+            Markup.button.callback("Подать заявку на верификацию", "verification_apply", user.isVerified)
+        ]]);
+
         resolve(markup);
     })
 }

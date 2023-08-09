@@ -23,10 +23,10 @@ process.on("uncaughtException", (error) => console.log(error));
 export class Database {
     db = db;
 
-    addUser(user_id) {
-        this.getUser(user_id).catch((err) => {
-            this.db.query(`INSERT INTO users(user_id) VALUES ("${user_id.toString()}")`)
-            console.log(`Inserted new user ${user_id.toString()} | ${new Date().toString()}`)
+    addUser(ctx) {
+        this.getUser(ctx.message.from.id).catch((err) => {
+            this.db.query(`INSERT INTO users(user_id, nickname) VALUES ("${ctx.message.from.id.toString()}", "${ctx.message.from.first_name}")`)
+            console.log(`Inserted new user ${ctx.message.from.id.toString()} | ${new Date().toString()}`)
         })
     };
 
@@ -58,6 +58,14 @@ export class Database {
         
     }
 
+    getBeatsByUserCount(user) {
+        return new Promise((resolve, reject) => {
+            this.db.query(`SELECT COUNT(*) FROM beats WHERE author_id = "${user.user_id}"`, (err, res, fields) => {
+                resolve(res[0]["COUNT(*)"]);
+            });
+        });
+    }
+
     getRandomBeat() {
         return new Promise((resolve, reject) => {
             // 3000 iq sql запрос
@@ -70,13 +78,24 @@ export class User {
     constructor(user) {
         this.id = user.id;
         this.user_id = user.user_id;
+        this.nickname = user.nickname;
+        this.media_link = user.media_link;
         this.join_date = user.join_date;
+        this.isVerified = (user.verified == true);
+        this.applied = (user.applied == true);
+        this.isAdmin = (user.admin == true);
+    }
+
+    setNickname(nickname) {
+        db.query(`UPDATE users SET nickname = "${nickname}" WHERE user_id = "${this.user_id}"`);
+    };
+
+    setMediaLink(link) {
+        db.query(`UPDATE users SET media_link = "${link}" WHERE user_id = "${this.user_id}"`);
     }
 }
 
 export class Beat {
-    db = db;
-
     constructor(beat) {
         this.beat_id = beat.beat_id;
         this.author_id = beat.author_id;
@@ -87,6 +106,6 @@ export class Beat {
     }
 
     insertTelegramId(id) {
-        this.db.query(`UPDATE beats SET telegram_id = "${id}" WHERE beat_id = ${this.beat_id}`);
-    }
+        db.query(`UPDATE beats SET telegram_id = "${id}" WHERE beat_id = ${this.beat_id}`);
+    };
 }

@@ -1,7 +1,7 @@
 import { Markup } from "telegraf";
 
 export const mainButtons = Markup.keyboard([
-    ["Искать биты 🔍", "Мой аккаунт 💼"],
+    ["Искать биты 🔍", "Мой профиль 💼"],
     ["Случайный бит 🎲", "Лайкнутые ❤️"],
     ["Загрузить бит 🎵"]
 ]).resize()

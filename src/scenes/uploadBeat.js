@@ -7,7 +7,10 @@ import * as utils from "../services/utils.js";
 const db = new Database(); 
 
 export const uploadBeatScene = new Scenes.WizardScene("UPLOAD_BEAT_SCENE", //што это за хуйня где мой fsm я куда попал
-    ctx => {
+    async ctx => {
+        const user = await db.getUser(ctx.message.from.id);
+        if (!user.isVerified) { ctx.scene.leave(); return; };
+
         ctx.reply("Отправь бит в формате MP3. Размер файла не должен превышать 20MB", keyboardMarkups.cancelButton);
         ctx.wizard.next();
     },
