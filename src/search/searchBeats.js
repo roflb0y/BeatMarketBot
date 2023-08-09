@@ -14,10 +14,11 @@ export async function getBeat(ctx, page, type) {
 
     //есле типо страницк перелистнули а не через команду поиск начали чтобы сообщение замениолсь а не новое отправилось
     if (ctx.callbackQuery) {
-        const f = await Input.fromLocalFile(beat_path)
+        const f = await Input.fromLocalFile(beat_path, beat.title)
         ctx.editMessageMedia({ media: f, type: "audio" }, inlineButtons);
     }
     else { 
-        ctx.replyWithAudio({ source: beat_path }, inlineButtons);
+        //const f = await Input.fromLocalFile(beat_path, beat.title)
+        ctx.replyWithAudio({ source: beat_path, filename: beat.title }, inlineButtons);
     }
 }
