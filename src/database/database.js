@@ -52,7 +52,7 @@ export class Database {
         switch (type) {
             case "recent":
                 return new Promise((resolve, reject) => {
-                    this.db.query("SELECT * FROM beats ORDER BY beat_id DESC", (err, res, fields) => resolve(res));
+                    this.db.query("SELECT * FROM beats ORDER BY beat_id DESC", (err, res, fields) => resolve(res.map(beat => new Beat(beat))));
                 });
         }
         
@@ -64,5 +64,22 @@ export class User {
         this.id = user.id;
         this.user_id = user.user_id;
         this.join_date = user.join_date;
+    }
+}
+
+export class Beat {
+    db = db;
+
+    constructor(beat) {
+        this.beat_id = beat.beat_id;
+        this.author_id = beat.author_id;
+        this.upload_date = beat.upload_date;
+        this.title = beat.title;
+        this.tags = beat.tags;
+        this.telegram_id = beat.telegram_id;
+    }
+
+    insertTelegramId(id) {
+        this.db.query(`UPDATE beats SET telegram_id = "${id}" WHERE beat_id = ${this.beat_id}`);
     }
 }
