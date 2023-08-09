@@ -25,7 +25,6 @@ export const uploadBeatScene = new Scenes.WizardScene("UPLOAD_BEAT_SCENE", //ш�
 
         ctx.telegram.getFileLink(ctx.message.audio.file_id)
         .then((url) => { 
-
             processBeat.downloadBeat(url.href)
             .then(beat_filepath => {
                 processBeat.compressBeat(beat_filepath).then((compressed_path) => {
@@ -33,6 +32,7 @@ export const uploadBeatScene = new Scenes.WizardScene("UPLOAD_BEAT_SCENE", //ш�
                 });
             })
             .catch(error => {
+                console.log(error)
                 ctx.reply(`произошла ошыпка`, keyboardMarkups.mainButtons);
                 ctx.scene.leave();
             });

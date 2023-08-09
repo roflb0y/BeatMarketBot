@@ -16,8 +16,8 @@ export function downloadBeat(url) {
     })
 }
 
-export async function compressBeat(filepath) {
-    new Promise((resolve, reject) => {
+export function compressBeat(filepath) {
+    return new Promise((resolve, reject) => {
         ffmpeg()
             .input(path.resolve(filepath))
             .audioCodec("aac")
@@ -40,7 +40,7 @@ export async function compressBeat(filepath) {
 
 export function renameBeat(tempName, beatId) {
     const parsedPath = path.parse(tempName)
-    const newName = `${parsedPath.dir}/${beatId.toString()}${parsedPath.ext}`
+    const newName = `${parsedPath.dir}/b${beatId.toString()}${parsedPath.ext}`
 
     fs.renameSync(tempName, newName);
 }
