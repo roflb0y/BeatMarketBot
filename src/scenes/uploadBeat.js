@@ -17,8 +17,11 @@ export const uploadBeatScene = new Scenes.WizardScene("UPLOAD_BEAT_SCENE", //ш�
 
     //скячивание бита)))
     async ctx => {
+        const user = await db.getUser(ctx.message.from.id);
+        const mainButtons = await keyboardMarkups.mainButtons(user);
+
         if(ctx.message.text === "Отменить ❌") {
-            ctx.reply("Загрузка бита отменена", keyboardMarkups.mainButtons);
+            ctx.reply("Загрузка бита отменена", mainButtons);
             ctx.scene.leave();
             return;
         }
@@ -36,7 +39,7 @@ export const uploadBeatScene = new Scenes.WizardScene("UPLOAD_BEAT_SCENE", //ш�
             })
             .catch(error => {
                 console.log(error)
-                ctx.reply(`произошла ошыпка`, keyboardMarkups.mainButtons);
+                ctx.reply(`произошла ошыпка`, mainButtons);
                 ctx.scene.leave();
             });
         });
@@ -49,9 +52,13 @@ export const uploadBeatScene = new Scenes.WizardScene("UPLOAD_BEAT_SCENE", //ш�
     //получение названия бита
     async ctx => {
         if (ctx.wizard.state.filepath === undefined) { ctx.reply("Не так быстро"); return }
+
+        const user = await db.getUser(ctx.message.from.id);
+        const mainButtons = await keyboardMarkups.mainButtons(user);
+        console.log(mainButtons)
         if (ctx.message.text === "Отменить ❌") {
             utils.deleteBeat(ctx.wizard.state.filepath);
-            ctx.reply("Загрузка бита отменена", keyboardMarkups.mainButtons);
+            ctx.reply("Загрузка бита отменена", mainButtons);
             ctx.scene.leave();
             return;
         }
@@ -59,7 +66,7 @@ export const uploadBeatScene = new Scenes.WizardScene("UPLOAD_BEAT_SCENE", //ш�
         ctx.wizard.state.title = ctx.message.text;
         db.addBeat(ctx.wizard.state, ctx.message.from.id).then(beat_id => processBeat.renameBeat(ctx.wizard.state.filepath, beat_id));
 
-        ctx.reply(`Бит опубликован`, keyboardMarkups.mainButtons);
+        ctx.reply(`Бит опубликован`, mainButtons);
         ctx.scene.leave();
     }
 );

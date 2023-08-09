@@ -24,9 +24,14 @@ export class Database {
     db = db;
 
     addUser(ctx) {
-        this.getUser(ctx.message.from.id).catch((err) => {
-            this.db.query(`INSERT INTO users(user_id, nickname) VALUES ("${ctx.message.from.id.toString()}", "${ctx.message.from.first_name}")`)
-            console.log(`Inserted new user ${ctx.message.from.id.toString()} | ${new Date().toString()}`)
+        return new Promise((resolve) => {
+            this.getUser(ctx.message.from.id)
+            .then((user) => resolve())
+            .catch((err) => {
+                this.db.query(`INSERT INTO users(user_id, nickname) VALUES ("${ctx.message.from.id.toString()}", "${ctx.message.from.first_name}")`, (err, res, fields) => resolve())
+                console.log(`Inserted new user ${ctx.message.from.id.toString()} | ${new Date().toString()}`)
+                return;
+            })
         })
     };
 
@@ -56,7 +61,7 @@ export class Database {
                 });
         }
         
-    }
+    };
 
     getBeatsByUserCount(user) {
         return new Promise((resolve, reject) => {
@@ -64,12 +69,20 @@ export class Database {
                 resolve(res[0]["COUNT(*)"]);
             });
         });
-    }
+    };
 
     getRandomBeat() {
         return new Promise((resolve, reject) => {
             // 3000 iq sql запрос
             this.db.query("SELECT COUNT(*) FROM beats", (err, res, fields) => resolve( Math.floor(Math.random() * res[0]["COUNT(*)"]) ));
+        });
+    };
+
+    getAdmins() {
+        return new Promise((resolve, reject) => {
+            this.db.query(`SELECT * FROM users WHERE admin = '1'`, (err, res, fields) => {
+                resolve(res.map(user => new User(user)));
+            });
         });
     }
 }
@@ -82,16 +95,29 @@ export class User {
         this.media_link = user.media_link;
         this.join_date = user.join_date;
         this.isVerified = (user.verified == true);
-        this.applied = (user.applied == true);
+        this.haveApplied = (user.applied == true);
         this.isAdmin = (user.admin == true);
     }
 
     setNickname(nickname) {
         db.query(`UPDATE users SET nickname = "${nickname}" WHERE user_id = "${this.user_id}"`);
+        this.nickname = nickname;
     };
 
     setMediaLink(link) {
         db.query(`UPDATE users SET media_link = "${link}" WHERE user_id = "${this.user_id}"`);
+        this.media_link = link;
+    };
+
+    setApplied(status) {
+        db.query(`UPDATE users SET applied = '${status}' WHERE user_id = "${this.user_id}"`);
+        if(status === 1) console.log(`User ${this.user_id} has applied for verification | ${new Date().toString()}`);
+        this.haveApplied = (status == true);
+    };
+
+    setVerified(status) {
+        db.query(`UPDATE users SET verified = '${status}' WHERE user_id = "${this.user_id}"`);
+        this.isVerified = (status == true);
     }
 }
 

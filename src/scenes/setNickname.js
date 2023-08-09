@@ -11,15 +11,16 @@ export const setNickScene = new Scenes.WizardScene("SET_NICK_SCENE",
         ctx.wizard.next();
     },
     async ctx => {
+        const user = await db.getUser(ctx.message.from.id);
+        const mainButtons = await keyboardMarkups.mainButtons(user);
         if (ctx.message.text === "Отменить ❌") {
-            ctx.reply("Отменено", keyboardMarkups.mainButtons);
+            ctx.reply("Отменено", mainButtons);
             ctx.scene.leave();
             return;
         }
-        const user = await db.getUser(ctx.message.from.id);
         user.setNickname(ctx.message.text);
 
-        ctx.reply("Никнейм изменен", keyboardMarkups.mainButtons);
+        ctx.reply("Никнейм изменен", mainButtons);
         getProfile(ctx);
         ctx.scene.leave();
     }

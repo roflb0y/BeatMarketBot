@@ -12,8 +12,11 @@ export const setMediaLinkScene = new Scenes.WizardScene("SET_MEDIA_LINK_SCENE",
         ctx.wizard.next();
     },
     async ctx => {
+        const user = await db.getUser(ctx.message.from.id);
+        const mainButtons = await keyboardMarkups.mainButtons(user);
+
         if (ctx.message.text === "Отменить ❌") {
-            ctx.reply("Отменено", keyboardMarkups.mainButtons);
+            ctx.reply("Отменено", mainButtons);
             ctx.scene.leave();
             return;
         }
@@ -21,10 +24,9 @@ export const setMediaLinkScene = new Scenes.WizardScene("SET_MEDIA_LINK_SCENE",
             ctx.reply("Отправь корректную ссылку")
             return;
         }
-        const user = await db.getUser(ctx.message.from.id);
         user.setMediaLink(ctx.message.text);
 
-        ctx.reply("Ссылка изменена", keyboardMarkups.mainButtons);
+        ctx.reply("Ссылка изменена", mainButtons);
         getProfile(ctx);
         ctx.scene.leave();
     }

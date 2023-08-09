@@ -1,4 +1,3 @@
-import { bot } from "../bot.js";
 import { getBeat } from "../search/searchBeats.js";
 import { Database } from "../database/database.js";
 import * as utils from "../services/utils.js";

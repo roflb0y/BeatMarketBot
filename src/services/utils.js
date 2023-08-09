@@ -59,7 +59,8 @@ export function parseUploadDate(date) {
 }
 
 export function prepareString(str) {
-  return str.replace(/\./g, "\\.");
+  if(str) return str.toString().replace(/\./g, "\\.")
+  else return "null";
 }
 
 export const isValidUrl = urlString => {

@@ -5,7 +5,10 @@ import * as inlineMarkups from "../markups/inlineMarkups.js";
 
 const db = new Database();
 
-bot.start(ctx => {
-    db.addUser(ctx);
-    ctx.reply("привет", keyboardMarkups.mainButtons);
+bot.start(async ctx => {
+    await db.addUser(ctx);
+    const user = await db.getUser(ctx.message.from.id);
+    const mainButtons = await keyboardMarkups.mainButtons(user);
+
+    ctx.reply("привет", mainButtons);
 });
