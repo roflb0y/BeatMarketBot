@@ -63,6 +63,15 @@ export class Database {
         
     };
 
+    getBeat(beat_id) {
+        return new Promise((resolve, reject) => {
+            this.db.query(`SELECT * FROM beats WHERE beat_id = ${beat_id}`, (err, res, fields) => { 
+                if (res.length === 0) { resolve(false); return }
+                resolve(new Beat(res[0]))
+            });
+        });
+    }
+
     getBeatsByUserCount(user) {
         return new Promise((resolve, reject) => {
             this.db.query(`SELECT COUNT(*) FROM beats WHERE author_id = "${user.user_id}"`, (err, res, fields) => {
@@ -129,9 +138,14 @@ export class Beat {
         this.title = beat.title;
         this.tags = beat.tags;
         this.telegram_id = beat.telegram_id;
-    }
+    };
 
     insertTelegramId(id) {
         db.query(`UPDATE beats SET telegram_id = "${id}" WHERE beat_id = ${this.beat_id}`);
     };
+
+    deleteBeat() {
+        db.query(`DELETE FROM beats WHERE beat_id = ${this.beat_id}`);
+        console.log(`Beat ${this.beat_id} deleted | ${new Date().toString()}`);
+    }
 }

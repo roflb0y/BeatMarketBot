@@ -55,7 +55,6 @@ export const uploadBeatScene = new Scenes.WizardScene("UPLOAD_BEAT_SCENE", //ш�
 
         const user = await db.getUser(ctx.message.from.id);
         const mainButtons = await keyboardMarkups.mainButtons(user);
-        console.log(mainButtons)
         if (ctx.message.text === "Отменить ❌") {
             utils.deleteBeat(ctx.wizard.state.filepath);
             ctx.reply("Загрузка бита отменена", mainButtons);

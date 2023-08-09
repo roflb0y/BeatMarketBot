@@ -1,6 +1,6 @@
 import { Markup } from "telegraf";
 
-export async function pageButtons(page, type, beats) {
+export async function pageButtons(user, page, type, beat, beats) {
     return new Promise((resolve) => {
         let prev_button = "⏪";
         let prev_data = `page_${page - 1}_${type}`;
@@ -11,14 +11,26 @@ export async function pageButtons(page, type, beats) {
         if (page === 0) { prev_button = " "; prev_data = "none" };
         if (page + 1 === beats.length) { next_button = " "; next_data = "none" };
 
-        const markup = Markup.inlineKeyboard([
+        const markup = Markup.inlineKeyboard([[
             Markup.button.callback(prev_button, prev_data),
             Markup.button.callback(`${page + 1}/${beats.length}`, "none"),
-            Markup.button.callback(next_button, next_data)
+            Markup.button.callback(next_button, next_data)],
+            [Markup.button.callback("Удалить бит", `delete_beat_${beat.beat_id}`, !(user.user_id === beat.author_id || user.isAdmin))]
         ]);
     
         resolve(markup);
     });
+};
+
+export async function deleteBeatButtons(beat_id) {
+    return new Promise((resolve) => {
+        const markup = Markup.inlineKeyboard([
+            Markup.button.callback("Удалить", `confirm_delete_beat_${beat_id}`),
+            Markup.button.callback("Отмена", "delete_message")
+        ]);
+
+        resolve(markup);
+    })
 };
 
 export async function profileButtons(user) {

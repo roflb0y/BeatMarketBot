@@ -14,12 +14,12 @@ bot.on("text", async ctx => {
             return;
         
         case "Искать биты 🔍":
-            getBeat(ctx, 0, "recent");
+            getBeat(ctx, ctx.message.from.id, 0, "recent");
             return;
 
         case "Случайный бит 🎲":
             const beat_index = await db.getRandomBeat();
-            getBeat(ctx, beat_index, "recent");
+            getBeat(ctx, ctx.message.from.id, beat_index, "recent");
             return;
 
         case "Мой профиль 💼":

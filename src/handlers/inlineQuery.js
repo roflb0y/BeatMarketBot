@@ -3,6 +3,7 @@ import * as search from "../search/searchBeats.js";
 import * as inlineMarkups from "../markups/inlineMarkups.js";
 import { Database } from "../database/database.js";
 import * as application from "../services/application.js";
+import * as utils from "../services/utils.js";
 
 const db = new Database();
 
@@ -11,8 +12,10 @@ bot.action(/^page/, async ctx => {
     let zalupa, page, type;
 
     [zalupa, page, type] = ctx.callbackQuery.data.split("_");
-    search.getBeat(ctx, Number(page), type);
+    search.getBeat(ctx, ctx.callbackQuery.from.id, Number(page), type);
 });
+
+
 
 bot.action("profile_set_nick", async ctx => {
     ctx.scene.enter("SET_NICK_SCENE");
@@ -21,6 +24,36 @@ bot.action("profile_set_nick", async ctx => {
 bot.action("profile_set_media_link", async ctx => {
     ctx.scene.enter("SET_MEDIA_LINK_SCENE");
 });
+
+
+bot.action(/^delete_beat/, async ctx => {
+    const user = await db.getUser(ctx.callbackQuery.from.id);
+    const beat_id = ctx.callbackQuery.data.split("_").slice(-1)[0];
+    const beat = await db.getBeat(beat_id);
+
+    if (beat === false) return;
+    if (!(beat.author_id === ctx.callbackQuery.from.id.toString()) && !user.isAdmin) return;
+
+    const inlineButtons = await inlineMarkups.deleteBeatButtons(beat_id);
+    ctx.replyWithMarkdownV2("*Вы действительно хотите удалить этот бит?*", inlineButtons);
+});
+
+bot.action(/^confirm_delete_beat_/, async ctx => {
+    const user = await db.getUser(ctx.callbackQuery.from.id);
+    const beat_id = ctx.callbackQuery.data.split("_").slice(-1)[0];
+    const beat = await db.getBeat(beat_id);
+
+    if (!(beat.author_id === ctx.callbackQuery.from.id.toString()) && !user.isAdmin) return;
+
+    const beat_filepath = `./beats/b${beat_id}.m4a`;
+    beat.deleteBeat(beat_filepath);
+    utils.deleteBeat(beat_filepath);
+
+    ctx.deleteMessage();
+    ctx.replyWithMarkdownV2(`*Бит "${beat.title}" удален*`, inlineMarkups.deleteMessageButton);
+})
+
+
 
 bot.action("verification_apply", async ctx => {
     const user = await db.getUser(ctx.callbackQuery.from.id);
@@ -40,6 +73,8 @@ bot.action("verification_apply_confirm", async ctx => {
 
     ctx.editMessageText("Заявка на верификацию отправлена ✅");
 });
+
+
 
 bot.action("delete_message", async ctx => {
     ctx.deleteMessage();
