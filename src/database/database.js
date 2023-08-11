@@ -1,6 +1,6 @@
-import sqlite3 from "sqlite3";
 import mysql from "mysql2";
 import * as config from "../config.js";
+import * as utils from "../services/utils.js";
 
 const db = mysql.createConnection({
     host: config.MYSQL_HOST,
@@ -46,7 +46,8 @@ export class Database {
 
     addBeat(data, author_id) {
         return new Promise((resolve, reject) => {
-            this.db.query(`INSERT INTO beats(author_id, title, tags) VALUES ("${author_id}", "${data.title}", "")`, (err, res, fields) => {
+            this.db.query(`INSERT INTO beats(author_id, title, tags, liked_by) VALUES ("${author_id}", "${data.title}", "", "")`, (err, res, fields) => {
+                console.log(res)
                 console.log(`Uploaded new beat | Id: ${res.insertId} | ${new Date().toString()}`);
                 resolve(res.insertId);
             });
@@ -93,7 +94,7 @@ export class Database {
                 resolve(res.map(user => new User(user)));
             });
         });
-    }
+    };
 }
 
 export class User {
@@ -137,15 +138,35 @@ export class Beat {
         this.upload_date = beat.upload_date;
         this.title = beat.title;
         this.tags = beat.tags;
+        this.liked_by = beat.liked_by;
         this.telegram_id = beat.telegram_id;
     };
 
     insertTelegramId(id) {
         db.query(`UPDATE beats SET telegram_id = "${id}" WHERE beat_id = ${this.beat_id}`);
+        this.telegram_id = id;
     };
 
     deleteBeat() {
         db.query(`DELETE FROM beats WHERE beat_id = ${this.beat_id}`);
         console.log(`Beat ${this.beat_id} deleted | ${new Date().toString()}`);
+    };
+
+    async toggleLike(user_id) {
+        const likedUsers = await utils.parseLikes(this.liked_by);
+
+        if(!likedUsers.includes(user_id.toString())) likedUsers.unshift(user_id)
+        else
+        { 
+            let index = likedUsers.indexOf(user_id);
+            likedUsers.splice(index, 1); 
+        }
+        console.log(user_id, "liked or removed like")
+        
+
+        const dumpedUsers = utils.dumpLikes(likedUsers);
+        this.liked_by = dumpedUsers;
+
+        db.query(`UPDATE beats SET liked_by = "${dumpedUsers}" WHERE beat_id = ${this.beat_id}`);
     }
 }

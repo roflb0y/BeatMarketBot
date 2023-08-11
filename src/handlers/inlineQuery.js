@@ -75,6 +75,20 @@ bot.action("verification_apply_confirm", async ctx => {
 });
 
 
+bot.action(/^like_toggle_/, async ctx => {
+    let beat_page, search_type;
+    [beat_page, search_type] = ctx.callbackQuery.data.split("_").slice(-2);
+    beat_page = Number(beat_page);
+
+    const beats = await db.getBeats(search_type);
+    const beat = beats[beat_page];
+
+    await beat.toggleLike(ctx.callbackQuery.from.id);
+
+    search.updateBeatMessage(ctx, ctx.callbackQuery.from.id, beat_page, search_type);
+    ctx.answerCbQuery();
+});
+
 
 bot.action("delete_message", async ctx => {
     ctx.deleteMessage();

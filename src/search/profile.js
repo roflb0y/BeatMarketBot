@@ -11,7 +11,7 @@ export async function getProfile(ctx) {
 
     const verifStatus = user.isVerified ? "✅" : "❌";
     const inlineButtons = await inlineMarkups.profileButtons(user);
-    const joined_ago = utils.timeSince(user.join_date) + " назад";
+    const joined_ago = utils.getTimeSince(user.join_date) + " назад";
 
     const replystr = `*💼 Ваш профиль:*\n\n*👩‍💻 Никнейм:* ${user.nickname}\n*🌏 Соцсеть:* ${utils.prepareString(user.media_link)}\n*🧭 Верификация:* ${verifStatus}\n*☁ Загружено битов:* ${uploaded_beats}\n\n*Первый запуск бота:* ${joined_ago}`;
 

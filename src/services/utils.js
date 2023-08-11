@@ -54,6 +54,22 @@ function numDeclination(num, one, two, five) {
     return five;
 }
 
+export function parseLikes(data) {
+  const parsedData = data.split("|");
+  parsedData.pop();
+
+  return parsedData;
+}
+
+export function dumpLikes(data) {
+  let splitter = data.length != 0 ? "|" : "";
+  return data.join("|") + splitter;
+}
+
+export function getTimeSince(date) {
+  return parseUploadDate(date) + " \\| " + timeSince(date) + " назад";
+}
+
 export function parseUploadDate(date) {
     return moment(date).format('DD.MM.YYYY').replace(/\./g, "\\.");
 }

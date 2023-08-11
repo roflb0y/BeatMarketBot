@@ -21,7 +21,7 @@ export function compressBeat(filepath) {
         ffmpeg()
             .input(path.resolve(filepath))
             .audioCodec("aac")
-            .audioBitrate("128k")
+            .audioBitrate("256k")
             .save(`./beats/b${path.parse(filepath).name}.m4a`)
     
             .on("error", function(err, stdout, stderr) {
