@@ -46,19 +46,28 @@ export class Database {
 
     addBeat(data, author_id) {
         return new Promise((resolve, reject) => {
-            this.db.query(`INSERT INTO beats(author_id, title, tags, liked_by) VALUES ("${author_id}", "${data.title}", "", "")`, (err, res, fields) => {
+            this.db.query(`INSERT INTO beats(author_id, title, tags) VALUES ("${author_id}", "${data.title}", "")`, (err, res, fields) => {
                 console.log(`Uploaded new beat | Id: ${res.insertId} | ${new Date().toString()}`);
                 resolve(res.insertId);
             });
         });
     };
 
-    getBeats(type) {
+    async getBeats(type, user) {
         switch (type) {
             case "recent":
                 return new Promise((resolve, reject) => {
                     this.db.query("SELECT * FROM beats ORDER BY beat_id DESC", (err, res, fields) => resolve(res.map(beat => new Beat(beat))));
                 });
+            case "myLiked":
+                return new Promise((resolve, reject) => {
+                    this.db.query(`SELECT liked FROM users WHERE user_id = "${user.user_id}"`, (err, res, fields) => {
+                        let beatsList = utils.parseLikes(res[0].liked);
+                        beatsList = beatsList.join(", ");
+
+                        this.db.query(`SELECT * FROM beats WHERE beat_id IN(${beatsList})`, (err, res, fields) => resolve(res.map(beat => new Beat(beat))))
+                    }
+                )});
         }
         
     };
@@ -139,7 +148,6 @@ export class User {
         }
 
         const dumpedBeats = utils.dumpLikes(this.liked);
-
         db.query(`UPDATE users SET liked = "${dumpedBeats}" WHERE user_id = ${this.user_id}`);
     }
 }
@@ -151,7 +159,6 @@ export class Beat {
         this.upload_date = beat.upload_date;
         this.title = beat.title;
         this.tags = beat.tags;
-        this.liked_by = beat.liked_by;
         this.telegram_id = beat.telegram_id;
     };
 

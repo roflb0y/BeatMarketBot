@@ -22,6 +22,12 @@ bot.on("text", async ctx => {
             getBeat(ctx, ctx.message.from.id, beat_index, "recent");
             return;
 
+        case "Лайкнутые ❤️":
+            const user = await db.getUser(ctx.message.from.id);
+            if(user.liked.length === 0) { ctx.reply("Вы не лайкнули ни одного бита", inlineMarkups.deleteMessageButton); return }
+            getBeat(ctx, ctx.message.from.id, 0, "myLiked");
+            return;
+
         case "Мой профиль 💼":
             getProfile(ctx);
             return;

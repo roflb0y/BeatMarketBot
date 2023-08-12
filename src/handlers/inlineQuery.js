@@ -89,11 +89,19 @@ bot.action(/^like_toggle_/, async ctx => {
     [beat_page, search_type] = ctx.callbackQuery.data.split("_").slice(-2);
     beat_page = Number(beat_page);
 
-    const beats = await db.getBeats(search_type);
-    const beat = beats[beat_page];
     const user = await db.getUser(ctx.callbackQuery.from.id);
+    const beats = await db.getBeats(search_type, user);
+    const beat = beats[beat_page];
 
     await user.toggleLike(beat);
+
+    if(beat_page + 1 === beats.length && search_type === "myLiked") beat_page--;
+
+    if(beats.length === 1) {
+        ctx.deleteMessage();
+        ctx.reply("Вы не лайкнули ни одного бита", inlineMarkups.deleteMessageButton);
+        return;
+    }
 
     search.updateBeatMessage(ctx, ctx.callbackQuery.from.id, beat_page, search_type);
     ctx.answerCbQuery();
