@@ -70,7 +70,7 @@ export class Database {
                 resolve(new Beat(res[0]))
             });
         });
-    }
+    };
 
     getBeatsByUserCount(user) {
         return new Promise((resolve, reject) => {
@@ -103,6 +103,7 @@ export class User {
         this.nickname = user.nickname;
         this.media_link = user.media_link;
         this.join_date = user.join_date;
+        this.liked = utils.parseLikes(user.liked);
         this.isVerified = (user.verified == true);
         this.haveApplied = (user.applied == true);
         this.isAdmin = (user.admin == true);
@@ -127,6 +128,19 @@ export class User {
     setVerified(status) {
         db.query(`UPDATE users SET verified = '${status}' WHERE user_id = "${this.user_id}"`);
         this.isVerified = (status == true);
+    };
+
+    toggleLike(beat) {
+        if(!this.liked.includes(beat.beat_id.toString())) this.liked.unshift(beat.beat_id)
+        else
+        { 
+            let index = this.liked.indexOf(beat.beat_id.toString());
+            this.liked.splice(index, 1); 
+        }
+
+        const dumpedBeats = utils.dumpLikes(this.liked);
+
+        db.query(`UPDATE users SET liked = "${dumpedBeats}" WHERE user_id = ${this.user_id}`);
     }
 }
 
@@ -151,19 +165,9 @@ export class Beat {
         console.log(`Beat ${this.beat_id} deleted | ${new Date().toString()}`);
     };
 
-    async toggleLike(user_id) {
-        const likedUsers = await utils.parseLikes(this.liked_by);
-
-        if(!likedUsers.includes(user_id.toString())) likedUsers.unshift(user_id)
-        else
-        { 
-            let index = likedUsers.indexOf(user_id.toString());
-            likedUsers.splice(index, 1); 
-        }
-
-        const dumpedUsers = utils.dumpLikes(likedUsers);
-        this.liked_by = dumpedUsers;
-
-        db.query(`UPDATE beats SET liked_by = "${dumpedUsers}" WHERE beat_id = ${this.beat_id}`);
+    async getLikesCount() {
+        return new Promise((resolve) => {
+            db.query(`SELECT COUNT(*) FROM users WHERE liked LIKE \'%${this.beat_id}%\'`, (err, res, fields) => { resolve(res[0]["COUNT(*)"]) })
+        })
     }
 }

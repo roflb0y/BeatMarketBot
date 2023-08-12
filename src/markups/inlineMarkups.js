@@ -2,7 +2,7 @@ import { Markup } from "telegraf";
 import * as utils from "../services/utils.js";
 
 export async function pageButtons(user, page, type, beat, beats) {
-    return new Promise((resolve) => {
+    return new Promise(async (resolve) => {
         let prev_button = "⏪";
         let prev_data = `page_${page - 1}_${type}`;
     
@@ -12,8 +12,8 @@ export async function pageButtons(user, page, type, beat, beats) {
         if (page === 0) { prev_button = " "; prev_data = "none" };
         if (page + 1 === beats.length) { next_button = " "; next_data = "none" };
 
-        const isLiked = beat.liked_by.includes(user.user_id) ? "❤" : "🖤";
-        const likeCount = utils.parseLikes(beat.liked_by).length
+        const likeCount = await beat.getLikesCount();
+        const isLiked = user.liked.includes(beat.beat_id.toString()) ? "❤" : "🖤";
 
         const markup = Markup.inlineKeyboard([[
             Markup.button.callback(prev_button, prev_data),

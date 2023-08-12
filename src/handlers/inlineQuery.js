@@ -61,8 +61,7 @@ bot.action(/^refresh_/, async ctx => {
     
     search.updateBeatMessage(ctx, ctx.callbackQuery.from.id, beat_page, search_type);
     ctx.answerCbQuery();
-})
-
+});
 
 
 bot.action("verification_apply", async ctx => {
@@ -92,8 +91,9 @@ bot.action(/^like_toggle_/, async ctx => {
 
     const beats = await db.getBeats(search_type);
     const beat = beats[beat_page];
+    const user = await db.getUser(ctx.callbackQuery.from.id);
 
-    await beat.toggleLike(ctx.callbackQuery.from.id);
+    await user.toggleLike(beat);
 
     search.updateBeatMessage(ctx, ctx.callbackQuery.from.id, beat_page, search_type);
     ctx.answerCbQuery();
