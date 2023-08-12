@@ -49,5 +49,5 @@ export async function updateBeatMessage(ctx, user_id, page, type) {
 
     const inlineButtons = await inlineMarkups.pageButtons(user, page, type, beat, beats);
 
-    ctx.editMessageCaption(cap, { reply_markup: inlineButtons.reply_markup, parse_mode: "MarkdownV2" });
+    ctx.editMessageCaption(cap, { reply_markup: inlineButtons.reply_markup, parse_mode: "MarkdownV2" }).catch(() => {});
 }

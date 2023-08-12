@@ -18,7 +18,8 @@ export async function pageButtons(user, page, type, beat, beats) {
         const markup = Markup.inlineKeyboard([[
             Markup.button.callback(prev_button, prev_data),
             Markup.button.callback(`${page + 1}/${beats.length}`, "none"),
-            Markup.button.callback(next_button, next_data)],
+            Markup.button.callback(next_button, next_data),
+            Markup.button.callback("🔁", `refresh_${page}_${type}`)],
             [Markup.button.callback(`${isLiked} ${likeCount}`, `like_toggle_${page}_${type}`)],
             [Markup.button.callback("Удалить бит", `delete_beat_${beat.beat_id}`, !(user.user_id === beat.author_id || user.isAdmin))]
         ]);

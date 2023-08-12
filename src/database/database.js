@@ -47,7 +47,6 @@ export class Database {
     addBeat(data, author_id) {
         return new Promise((resolve, reject) => {
             this.db.query(`INSERT INTO beats(author_id, title, tags, liked_by) VALUES ("${author_id}", "${data.title}", "", "")`, (err, res, fields) => {
-                console.log(res)
                 console.log(`Uploaded new beat | Id: ${res.insertId} | ${new Date().toString()}`);
                 resolve(res.insertId);
             });
@@ -158,11 +157,9 @@ export class Beat {
         if(!likedUsers.includes(user_id.toString())) likedUsers.unshift(user_id)
         else
         { 
-            let index = likedUsers.indexOf(user_id);
+            let index = likedUsers.indexOf(user_id.toString());
             likedUsers.splice(index, 1); 
         }
-        console.log(user_id, "liked or removed like")
-        
 
         const dumpedUsers = utils.dumpLikes(likedUsers);
         this.liked_by = dumpedUsers;

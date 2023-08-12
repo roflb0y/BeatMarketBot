@@ -51,6 +51,16 @@ bot.action(/^confirm_delete_beat_/, async ctx => {
 
     ctx.deleteMessage();
     ctx.replyWithMarkdownV2(`*Бит "${beat.title}" удален*`, inlineMarkups.deleteMessageButton);
+});
+
+
+bot.action(/^refresh_/, async ctx => {
+    let beat_page, search_type;
+    [beat_page, search_type] = ctx.callbackQuery.data.split("_").slice(-2);
+    beat_page = Number(beat_page);
+    
+    search.updateBeatMessage(ctx, ctx.callbackQuery.from.id, beat_page, search_type);
+    ctx.answerCbQuery();
 })
 
 
