@@ -28,8 +28,11 @@ export class Database {
             this.getUser(ctx.message.from.id)
             .then((user) => resolve())
             .catch((err) => {
-                this.db.query(`INSERT INTO users(user_id, nickname) VALUES ("${ctx.message.from.id.toString()}", "${ctx.message.from.first_name}")`, (err, res, fields) => resolve())
-                console.log(`Inserted new user ${ctx.message.from.id.toString()} | ${new Date().toString()}`)
+                this.db.query(`INSERT INTO users(user_id, nickname, liked) VALUES ("${ctx.message.from.id.toString()}", "${ctx.message.from.first_name}", "")`, (err, res, fields) => { 
+                    console.log(`Inserted new user ${ctx.message.from.id.toString()} | ${new Date().toString()}`)
+                    resolve() 
+                });
+                
                 return;
             })
         })

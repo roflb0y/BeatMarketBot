@@ -53,6 +53,43 @@ bot.action(/^confirm_delete_beat_/, async ctx => {
     ctx.replyWithMarkdownV2(`*Бит "${beat.title}" удален*`, inlineMarkups.deleteMessageButton);
 });
 
+bot.action(/^contact_/, async ctx => {
+    const user = await db.getUser(ctx.callbackQuery.from.id);
+    const author_id = ctx.callbackQuery.data.split("_").slice(-1)[0];
+    const inlineButtons = await inlineMarkups.allowContactButtons(ctx.callbackQuery.from.id);
+
+    ctx.sendMessage(`Новый запрос на переписку от ${user.nickname}`, { chat_id: author_id, reply_markup: inlineButtons.reply_markup })
+    .then(() => {
+        ctx.replyWithMarkdownV2(`✅ *Запрос на переписку отправлен\\. Ожидайте ответа от битмейкера\\.*`);
+    })
+    .catch(() => {
+        ctx.replyWithMarkdownV2(`❌ *Не удалось отправить запрос на переписку так как бот был заблокирован битмейкером*`);
+    })
+});
+
+bot.action(/^allow_contact_/, async ctx => {
+    if (ctx.callbackQuery.from.username === undefined) {
+        ctx.reply("Укажите юзернейм в своем аккаунте Телеграма чтобы пользователь смог с вами связаться.", inlineMarkups.deleteMessageButton);
+        return;
+    }
+    const user_id = ctx.callbackQuery.data.split("_").slice(-1)[0];
+    const user = await db.getUser(user_id);
+    const author = await db.getUser(ctx.callbackQuery.from.id);
+
+    ctx.editMessageText(`Вы приняли запрос на переписку. Ваш аккаунт отправлен пользователю ${user.nickname}. Скоро он должен с вами связаться.`, ctx.chat.id, ctx.callbackQuery.message.id)
+
+    ctx.sendMessage(`✅ *Битмейкер ${author.nickname} принял запрос на переписку\\.*\n\n@${ctx.callbackQuery.from.username}\n\nОтправьте ему приветственное сообщение и перешлите сообщение с битом`, { chat_id: user_id, parse_mode: "MarkdownV2" })
+});
+
+bot.action(/^deny_contact_/, async ctx => {
+    const user_id = ctx.callbackQuery.data.split("_").slice(-1)[0];
+    const user = await db.getUser(user_id);
+    const author = await db.getUser(ctx.callbackQuery.from.id);
+
+    ctx.editMessageText(`Вы отклонили запрос на переписку с ${user.nickname}.`, ctx.chat.id, ctx.callbackQuery.message.id);
+    ctx.sendMessage(`*Битмейкер ${author.nickname} отклонил ваш запрос на переписку\\.*`, { chat_id: user_id, parse_mode: "MarkdownV2" });
+})
+
 
 bot.action(/^refresh_/, async ctx => {
     let beat_page, search_type;

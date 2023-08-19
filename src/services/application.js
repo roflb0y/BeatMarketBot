@@ -23,24 +23,36 @@ bot.action(/^application_/, async ctx => {
 
     const user = await db.getUser(user_id)
 
-    if (!user.haveApplied) { ctx.editMessageText(`Заявка уже была рассмотрена другим модератором\nСтатус верификации пользователя ${user.user_id}: ${user.isVerified}`, inlineMarkups.deleteMessageButton); return }
+    if (!user.haveApplied) { ctx.editMessageText(`Заявка уже была рассмотрена другим модератором\nСтатус верификации пользователя ${user.nickname}: ${user.isVerified}`, inlineMarkups.deleteMessageButton); return }
 
     if (action === "apply") {
-        ctx.editMessageText(`✅ Заявка пользователя ${user_id} одобрена`);
+        ctx.editMessageText(`✅ Заявка пользователя ${user.nickname} одобрена`);
 
         user.setApplied(0);
         user.setVerified(1);
 
         const mainButtons = await keyboardMarkups.mainButtons(user);
-        bot.telegram.sendMessage(user_id, "Ваша заяыка одобрена", mainButtons);
+        bot.telegram.sendMessage(user_id, "✅ Ваша заявка на верификацию одобрена\n\nЖелаем успешных продаж в BeatMarket!", mainButtons);
         return;
     }
 
     if (action === "deny") {
-        ctx.editMessageText(`❌ Заявка пользователя ${user_id} отклонена`);
+        const inlineButtons = await inlineMarkups.denyVerificationReasons(user_id);
+        ctx.editMessageText(`Выберите причину отклонения заявки`, inlineButtons);
 
-        user.setApplied(0);
-        bot.telegram.sendMessage(user_id, "❌❌❌❌ Ваша заяыка отклонена ывалриывалшориывароапливапормпива");
         return;
     }
+});
+
+bot.action(/^denyreasons_/, async ctx => {
+    let zalupa, reasonId, user_id;
+    [zalupa, reasonId, user_id] = ctx.callbackQuery.data.split("_");
+
+    const denyReason = utils.applicationDenyReason(reasonId);
+    const user = await db.getUser(user_id)
+
+    ctx.editMessageText(`❌ Заявка пользователя ${user.nickname} отклонена по причине:\n\n${denyReason}`);
+    ctx.telegram.sendMessage(user.user_id, `❌ Ваша заявка на верификацию была отклонена. \n\nПричина: ${denyReason}`);
+
+    user.setApplied(0);
 })

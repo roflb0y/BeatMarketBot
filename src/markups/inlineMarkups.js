@@ -15,8 +15,9 @@ export async function pageButtons(user, page, type, beat, beats) {
         const likeCount = await beat.getLikesCount();
         const isLiked = user.liked.includes(beat.beat_id.toString()) ? "❤" : "🖤";
 
-        const markup = Markup.inlineKeyboard([[
-            Markup.button.callback(prev_button, prev_data),
+        const markup = Markup.inlineKeyboard([
+            [Markup.button.callback("Связаться с битмейкером", `contact_${beat.author_id}`)],
+            [Markup.button.callback(prev_button, prev_data),
             Markup.button.callback(`${page + 1}/${beats.length}`, "none"),
             Markup.button.callback(next_button, next_data),
             Markup.button.callback("🔁", `refresh_${page}_${type}`)],
@@ -66,6 +67,28 @@ export async function applicationCheckButtons(user_id) {
 
         resolve(markup);
     });
+};
+
+export async function denyVerificationReasons(user_id) {
+    return new Promise((resolve) => {
+        const markup = Markup.inlineKeyboard([
+            [Markup.button.callback("Некорректно введеные данные", `denyreasons_1_${user_id}`)],
+            [Markup.button.callback("Нет ответа за 24 часа", `denyreasons_2_${user_id}`)]
+        ]);
+
+        resolve(markup);
+    })
 }
+
+export async function allowContactButtons(user_id) {
+    return new Promise((resolve) => {
+        const markup = Markup.inlineKeyboard([
+            Markup.button.callback("Принять", `allow_contact_${user_id}`),
+            Markup.button.callback("Отклонить", `deny_contact_${user_id}`)
+        ]);
+
+        resolve(markup);
+    })
+};
 
 export const deleteMessageButton = Markup.inlineKeyboard([Markup.button.callback("Удалить это сообщение ❌", "delete_message")]);

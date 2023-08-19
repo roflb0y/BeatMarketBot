@@ -88,3 +88,13 @@ export const isValidUrl = urlString => {
   '(\\#[-a-z\\d_]*)?$','i'); // validate fragment locator
   return !!urlPattern.test(urlString);
 }
+
+export function applicationDenyReason(reasonId) {
+  switch (reasonId) {
+    case "1":
+      return "Некорректно введенные данные";
+    
+    case "2":
+      return "Вы не подтвердили свою личность через указанную соцсеть за 24 часа";
+  }
+}

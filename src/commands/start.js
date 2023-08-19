@@ -10,5 +10,5 @@ bot.start(async ctx => {
     const user = await db.getUser(ctx.message.from.id);
     const mainButtons = await keyboardMarkups.mainButtons(user);
 
-    ctx.reply("привет", mainButtons);
+    ctx.reply("Привет! Добро пожаловать в BeatMarket!", mainButtons);
 });
