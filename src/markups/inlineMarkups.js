@@ -16,7 +16,7 @@ export async function pageButtons(user, page, type, beat, beats) {
         const isLiked = user.liked.includes(beat.beat_id.toString()) ? "❤" : "🖤";
 
         const markup = Markup.inlineKeyboard([
-            [Markup.button.callback("Связаться с битмейкером", `contact_${beat.author_id}`)],
+            [Markup.button.callback("Связаться с битмейкером", `contact_${beat.author_id}`, (user.user_id === beat.author_id))],
             [Markup.button.callback(prev_button, prev_data),
             Markup.button.callback(`${page + 1}/${beats.length}`, "none"),
             Markup.button.callback(next_button, next_data),
@@ -42,12 +42,13 @@ export async function deleteBeatButtons(beat_id) {
 
 export async function profileButtons(user) {
     return new Promise((resolve) => {
-        const markup = Markup.inlineKeyboard([[
-            Markup.button.callback("Изменить никнейм", "profile_set_nick", (user.isVerified || user.haveApplied)),
-            Markup.button.callback("Изменить ссылку на соцсеть", "profile_set_media_link", (user.isVerified || user.haveApplied)),
-        ], [
-            Markup.button.callback("Подать заявку на верификацию", "verification_apply", (user.isVerified || user.haveApplied))
-        ]]);
+        const markup = Markup.inlineKeyboard([
+            [Markup.button.callback("Изменить никнейм", "profile_set_nick", (user.isVerified || user.haveApplied)),
+            Markup.button.callback("Изменить ссылку на соцсеть", "profile_set_media_link", (user.isVerified || user.haveApplied))],
+
+            [Markup.button.callback("Изменить цены на биты", "profile_set_prices")], 
+            [Markup.button.callback("Подать заявку на верификацию", "verification_apply", (user.isVerified || user.haveApplied))]
+        ]);
 
         resolve(markup);
     })
@@ -56,6 +57,11 @@ export async function profileButtons(user) {
 export const verificationConfirmButtons = Markup.inlineKeyboard([
     Markup.button.callback("Подать заявку", "verification_apply_confirm"),
     Markup.button.callback("Отмена", "delete_message")
+]);
+
+export const contactConfirmButtons = (author_id) => Markup.inlineKeyboard([
+    Markup.button.callback("✅ Отправить запрос", `confirm_contact_${author_id}`),
+    Markup.button.callback("❌ Отмена", "delete_message")
 ]);
 
 export async function applicationCheckButtons(user_id) {

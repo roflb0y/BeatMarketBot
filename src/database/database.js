@@ -114,6 +114,7 @@ export class User {
         this.user_id = user.user_id;
         this.nickname = user.nickname;
         this.media_link = user.media_link;
+        this.prices = user.prices;
         this.join_date = user.join_date;
         this.liked = utils.parseLikes(user.liked);
         this.isVerified = (user.verified == true);
@@ -129,6 +130,11 @@ export class User {
     setMediaLink(link) {
         db.query(`UPDATE users SET media_link = "${link}" WHERE user_id = "${this.user_id}"`);
         this.media_link = link;
+    };
+
+    setPrices(prices) {
+        db.query(`UPDATE users SET prices = "${prices}" WHERE user_id = "${this.user_id}"`);
+        this.prices = prices;
     };
 
     setApplied(status) {

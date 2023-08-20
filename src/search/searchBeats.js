@@ -13,8 +13,9 @@ export async function getBeat(ctx, user_id, page, type) {
     
     const upload_date = utils.getTimeSince(beat.upload_date);
     const author = await db.getUser(beat.author_id);
+    const preparedPrices = utils.prepareString(author.prices)
 
-    const cap = `*Автор:* ${author.nickname}\n\n*тут цены*\n\n*Дата загрузки:* ${upload_date}\n\@beat\\_market\\_bot`;
+    const cap = `*Автор:* ${author.nickname}\n\n*${preparedPrices}*\n\n*Дата загрузки:* ${upload_date}\n\@beat\\_market\\_bot`;
 
     let beat_path;
     let f;

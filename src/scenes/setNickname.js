@@ -11,6 +11,8 @@ export const setNickScene = new Scenes.WizardScene("SET_NICK_SCENE",
         ctx.wizard.next();
     },
     async ctx => {
+        if(ctx.callbackQuery) { return }
+        
         const user = await db.getUser(ctx.message.from.id);
         const mainButtons = await keyboardMarkups.mainButtons(user);
         if (ctx.message.text === "Отменить ❌") {

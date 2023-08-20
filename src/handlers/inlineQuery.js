@@ -19,10 +19,17 @@ bot.action(/^page/, async ctx => {
 
 bot.action("profile_set_nick", async ctx => {
     ctx.scene.enter("SET_NICK_SCENE");
+    ctx.answerCbQuery();
 });
 
 bot.action("profile_set_media_link", async ctx => {
     ctx.scene.enter("SET_MEDIA_LINK_SCENE");
+    ctx.answerCbQuery();
+});
+
+bot.action("profile_set_prices", async ctx => {
+    ctx.scene.enter("SET_PRICES_SCENE");
+    ctx.answerCbQuery();
 });
 
 
@@ -54,18 +61,25 @@ bot.action(/^confirm_delete_beat_/, async ctx => {
 });
 
 bot.action(/^contact_/, async ctx => {
+    const author_id = ctx.callbackQuery.data.split("_").slice(-1)[0];
+    const inlineButtons = await inlineMarkups.contactConfirmButtons(author_id);
+
+    ctx.reply("Вы уверены что хотите отправить битмейкеру запрос на переписку?", inlineButtons);
+});
+
+bot.action(/^confirm_contact_/, async ctx => {
     const user = await db.getUser(ctx.callbackQuery.from.id);
     const author_id = ctx.callbackQuery.data.split("_").slice(-1)[0];
     const inlineButtons = await inlineMarkups.allowContactButtons(ctx.callbackQuery.from.id);
 
     ctx.sendMessage(`Новый запрос на переписку от ${user.nickname}`, { chat_id: author_id, reply_markup: inlineButtons.reply_markup })
     .then(() => {
-        ctx.replyWithMarkdownV2(`✅ *Запрос на переписку отправлен\\. Ожидайте ответа от битмейкера\\.*`);
+        ctx.editMessageText(`✅ *Запрос на переписку отправлен\\. Ожидайте ответа от битмейкера\\.*`, { parse_mode: "MarkdownV2" });
     })
     .catch(() => {
-        ctx.replyWithMarkdownV2(`❌ *Не удалось отправить запрос на переписку так как бот был заблокирован битмейкером*`);
+        ctx.editMessageText(`❌ *Не удалось отправить запрос на переписку так как бот был заблокирован битмейкером*`, { parse_mode: "MarkdownV2" });
     })
-});
+})
 
 bot.action(/^allow_contact_/, async ctx => {
     if (ctx.callbackQuery.from.username === undefined) {
@@ -78,7 +92,7 @@ bot.action(/^allow_contact_/, async ctx => {
 
     ctx.editMessageText(`Вы приняли запрос на переписку. Ваш аккаунт отправлен пользователю ${user.nickname}. Скоро он должен с вами связаться.`, ctx.chat.id, ctx.callbackQuery.message.id)
 
-    ctx.sendMessage(`✅ *Битмейкер ${author.nickname} принял запрос на переписку\\.*\n\n@${ctx.callbackQuery.from.username}\n\nОтправьте ему приветственное сообщение и перешлите сообщение с битом`, { chat_id: user_id, parse_mode: "MarkdownV2" })
+    ctx.sendMessage(`✅ *Битмейкер ${author.nickname} принял запрос на переписку\\.*\n\n@${ctx.callbackQuery.from.username}\n\nОтправьте ему приветственное сообщение и перешлите сообщение с интересующим вас битом`, { chat_id: user_id, parse_mode: "MarkdownV2" })
 });
 
 bot.action(/^deny_contact_/, async ctx => {
@@ -87,7 +101,7 @@ bot.action(/^deny_contact_/, async ctx => {
     const author = await db.getUser(ctx.callbackQuery.from.id);
 
     ctx.editMessageText(`Вы отклонили запрос на переписку с ${user.nickname}.`, ctx.chat.id, ctx.callbackQuery.message.id);
-    ctx.sendMessage(`*Битмейкер ${author.nickname} отклонил ваш запрос на переписку\\.*`, { chat_id: user_id, parse_mode: "MarkdownV2" });
+    ctx.sendMessage(`❌ *Битмейкер ${author.nickname} отклонил ваш запрос на переписку\\.*`, { chat_id: user_id, parse_mode: "MarkdownV2" });
 })
 
 
