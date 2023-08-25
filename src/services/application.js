@@ -3,6 +3,7 @@ import { bot } from "../bot.js";
 import * as utils from "../services/utils.js";
 import * as inlineMarkups from "../markups/inlineMarkups.js";
 import * as keyboardMarkups from "../markups/keyboardMarkups.js";
+import * as actionReasons from "../assets/actionReasons.js";
 
 const db = new Database();
 
@@ -10,7 +11,7 @@ export async function sendApplication(user) {
     const admins = await db.getAdmins();
 
     const msg = `*Новая заявка на верификацию*\n\n*Айди телеграма:* ${user.user_id}\n*Никнейм:* ${user.nickname}\n*Соцсеть:* ${utils.prepareString(user.media_link)}`;
-    const inlineButtons = await inlineMarkups.applicationCheckButtons(user.user_id);
+    const inlineButtons = inlineMarkups.applicationCheckButtons(user.user_id);
 
     admins.forEach(user => {
         bot.telegram.sendMessage(user.user_id, msg, { parse_mode: "MarkdownV2", reply_markup: inlineButtons.reply_markup });
@@ -48,7 +49,7 @@ bot.action(/^denyreasons_/, async ctx => {
     let zalupa, reasonId, user_id;
     [zalupa, reasonId, user_id] = ctx.callbackQuery.data.split("_");
 
-    const denyReason = utils.applicationDenyReason(reasonId);
+    const denyReason = actionReasons.applicationDenyReason(reasonId);
     const user = await db.getUser(user_id)
 
     ctx.editMessageText(`❌ Заявка пользователя ${user.nickname} отклонена по причине:\n\n${denyReason}`);

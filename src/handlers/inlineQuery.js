@@ -61,18 +61,23 @@ bot.action(/^confirm_delete_beat_/, async ctx => {
 });
 
 bot.action(/^contact_/, async ctx => {
-    const author_id = ctx.callbackQuery.data.split("_").slice(-1)[0];
-    const inlineButtons = await inlineMarkups.contactConfirmButtons(author_id);
+    let author_id, beat_id;
+    [author_id, beat_id] = ctx.callbackQuery.data.split("_").slice(-2);
+    const inlineButtons = inlineMarkups.contactConfirmButtons(author_id, beat_id);
 
     ctx.reply("Вы уверены что хотите отправить битмейкеру запрос на переписку?", inlineButtons);
 });
 
 bot.action(/^confirm_contact_/, async ctx => {
+    let author_id, beat_id;
+
     const user = await db.getUser(ctx.callbackQuery.from.id);
-    const author_id = ctx.callbackQuery.data.split("_").slice(-1)[0];
+    [author_id, beat_id] = ctx.callbackQuery.data.split("_").slice(-2);
     const inlineButtons = await inlineMarkups.allowContactButtons(ctx.callbackQuery.from.id);
 
-    ctx.sendMessage(`Новый запрос на переписку от ${user.nickname}`, { chat_id: author_id, reply_markup: inlineButtons.reply_markup })
+    const beat = await db.getBeat(beat_id);
+
+    ctx.sendMessage(`Новый запрос на переписку от ${user.nickname}\n\nПользователь заинтересовался следующим битом:\n*${utils.prepareString(beat.title)}*`, { chat_id: author_id, parse_mode: "MarkdownV2", reply_markup: inlineButtons.reply_markup })
     .then(() => {
         ctx.editMessageText(`✅ *Запрос на переписку отправлен\\. Ожидайте ответа от битмейкера\\.*`, { parse_mode: "MarkdownV2" });
     })

@@ -16,7 +16,7 @@ export async function pageButtons(user, page, type, beat, beats) {
         const isLiked = user.liked.includes(beat.beat_id.toString()) ? "❤" : "🖤";
 
         const markup = Markup.inlineKeyboard([
-            [Markup.button.callback("Связаться с битмейкером", `contact_${beat.author_id}`, (user.user_id === beat.author_id))],
+            [Markup.button.callback("Связаться с битмейкером", `contact_${beat.author_id}_${beat.beat_id}`, (user.user_id === beat.author_id))],
             [Markup.button.callback(prev_button, prev_data),
             Markup.button.callback(`${page + 1}/${beats.length}`, "none"),
             Markup.button.callback(next_button, next_data),
@@ -40,45 +40,34 @@ export async function deleteBeatButtons(beat_id) {
     })
 };
 
-export async function profileButtons(user) {
-    return new Promise((resolve) => {
-        const markup = Markup.inlineKeyboard([
-            [Markup.button.callback("Изменить никнейм", "profile_set_nick", (user.isVerified || user.haveApplied)),
-            Markup.button.callback("Изменить ссылку на соцсеть", "profile_set_media_link", (user.isVerified || user.haveApplied))],
+export const profileButtons = (user, lang) => Markup.inlineKeyboard([
+    [Markup.button.callback(lang.profileButtons.change_nickname, "profile_set_nick", (user.isVerified || user.haveApplied)),
+    Markup.button.callback(lang.profileButtons.change_social, "profile_set_media_link", (user.isVerified || user.haveApplied))],
 
-            [Markup.button.callback("Изменить цены на биты", "profile_set_prices")], 
-            [Markup.button.callback("Подать заявку на верификацию", "verification_apply", (user.isVerified || user.haveApplied))]
-        ]);
-
-        resolve(markup);
-    })
-};
+    [Markup.button.callback(lang.profileButtons.change_prices, "profile_set_prices")], 
+    [Markup.button.callback(lang.profileButtons.apply_verification, "verification_apply", (user.isVerified || user.haveApplied))]
+]);
 
 export const verificationConfirmButtons = Markup.inlineKeyboard([
     Markup.button.callback("Подать заявку", "verification_apply_confirm"),
     Markup.button.callback("Отмена", "delete_message")
 ]);
 
-export const contactConfirmButtons = (author_id) => Markup.inlineKeyboard([
-    Markup.button.callback("✅ Отправить запрос", `confirm_contact_${author_id}`),
+export const contactConfirmButtons = (author_id, beat_id) => Markup.inlineKeyboard([
+    Markup.button.callback("✅ Отправить запрос", `confirm_contact_${author_id}_${beat_id}`),
     Markup.button.callback("❌ Отмена", "delete_message")
 ]);
 
-export async function applicationCheckButtons(user_id) {
-    return new Promise((resolve) => {
-        const markup = Markup.inlineKeyboard([
-            Markup.button.callback("Одобрить", `application_apply_${user_id}`),
-            Markup.button.callback("Отклонить", `application_deny_${user_id}`)
-        ]);
-
-        resolve(markup);
-    });
-};
+export const applicationCheckButtons = (user_id) => Markup.inlineKeyboard([
+    Markup.button.callback("Одобрить", `application_apply_${user_id}`),
+    Markup.button.callback("Отклонить", `application_deny_${user_id}`)
+]);
 
 export async function denyVerificationReasons(user_id) {
     return new Promise((resolve) => {
         const markup = Markup.inlineKeyboard([
-            [Markup.button.callback("Некорректно введеные данные", `denyreasons_1_${user_id}`)],
+            [Markup.button.callback("Некорректно введеные данные", `denyreasons_0_${user_id}`)],
+            [Markup.button.callback("Невозможно связаться", `denyreasons_1_${user_id}`)],
             [Markup.button.callback("Нет ответа за 24 часа", `denyreasons_2_${user_id}`)]
         ]);
 

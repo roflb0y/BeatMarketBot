@@ -1,0 +1,17 @@
+{
+    "startMessage": "Hi! Welcome to BeatMarket!",
+    "mainButtons": {
+        "recent_beats": "Recent beats 🕘",
+        "my_profile": "My profile 💼",
+        "random_beat": "Random beat 🎲",
+        "fav_beats": "Favourite beats ❤️",
+        "upload_beat": "Upload beat 🎵"
+    },
+    "profile": ["💼 *Your profile*:", "👩‍💻 *Nickname:*", "🌏 *Social media:*", "🧭 *Verification:*", "☁️ *Uploaded beats:*", "*Beat prices:*", "*First bot launch:*"],
+    "profileButtons": {
+        "change_nickname": "Change nickname",
+        "change_social": "Change social media link",
+        "change_prices": "Change beat prices",
+        "apply_verification": "Apply for verification"
+    }
+}

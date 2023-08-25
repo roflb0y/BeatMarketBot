@@ -1,15 +1,9 @@
 import { Markup } from "telegraf";
 
-export async function mainButtons(user) {
-    return new Promise((resolve) => {
-        const mainButtons = Markup.keyboard([
-            [Markup.button.text("Искать биты 🔍"), Markup.button.text("Мой профиль 💼")],
-            [Markup.button.text("Случайный бит 🎲"), Markup.button.text("Лайкнутые ❤️")],
-            [Markup.button.text("Загрузить бит 🎵", !user.isVerified)]
-        ]).resize()
-        
-        resolve(mainButtons);
-    });
-};
+export const mainButtons = (user, lang) => Markup.keyboard([
+    [Markup.button.text(lang.mainButtons.recent_beats), Markup.button.text(lang.mainButtons.my_profile)],
+    [Markup.button.text(lang.mainButtons.random_beat), Markup.button.text(lang.mainButtons.fav_beats)],
+    [Markup.button.text(lang.mainButtons.upload_beat, !user.isVerified)]
+]).resize()
 
 export const cancelButton = Markup.keyboard(["Отменить ❌"]).resize()

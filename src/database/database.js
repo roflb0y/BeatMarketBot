@@ -28,7 +28,7 @@ export class Database {
             this.getUser(ctx.message.from.id)
             .then((user) => resolve())
             .catch((err) => {
-                this.db.query(`INSERT INTO users(user_id, nickname, liked) VALUES ("${ctx.message.from.id.toString()}", "${ctx.message.from.first_name}", "")`, (err, res, fields) => { 
+                this.db.query(`INSERT INTO users(user_id, nickname, liked, user_locale) VALUES ("${ctx.message.from.id.toString()}", "${ctx.message.from.first_name}", "", "${ctx.from.language_code}")`, (err, res, fields) => { 
                     console.log(`Inserted new user ${ctx.message.from.id.toString()} | ${new Date().toString()}`)
                     resolve() 
                 });
@@ -117,6 +117,7 @@ export class User {
         this.prices = user.prices;
         this.join_date = user.join_date;
         this.liked = utils.parseLikes(user.liked);
+        this.locale = user.user_locale;
         this.isVerified = (user.verified == true);
         this.haveApplied = (user.applied == true);
         this.isAdmin = (user.admin == true);

@@ -37,7 +37,7 @@ export function timeSince(date) {
     return Math.floor(seconds) + " " + numDeclination(Math.floor(interval), "секунду", "секунды", "секунд");
 }
 
-// склоние числительных или типа того ну типо минут минуты минуту
+// склонение числительных или типа того ну типо минут минуты минуту
 function numDeclination(num, one, two, five) {
     let n = Math.abs(num);
     n %= 100;
@@ -106,12 +106,8 @@ export const isValidUrl = urlString => {
   return !!urlPattern.test(urlString);
 }
 
-export function applicationDenyReason(reasonId) {
-  switch (reasonId) {
-    case "1":
-      return "Некорректно введенные данные";
-    
-    case "2":
-      return "Вы не подтвердили свою личность через указанную соцсеть за 24 часа";
-  }
+function formatString(string, params) {
+  return string.replace(/{(\d+)}/g, (match, index) => {
+    return typeof params[index] !== 'undefined' ? params[index] : match;
+  });
 }
