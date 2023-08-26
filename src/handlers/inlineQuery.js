@@ -1,9 +1,11 @@
 import { bot } from "../bot.js";
 import * as search from "../search/searchBeats.js";
 import * as inlineMarkups from "../markups/inlineMarkups.js";
+import * as keyboardMarkups from "../markups/keyboardMarkups.js";
 import { Database } from "../database/database.js";
 import * as application from "../services/application.js";
 import * as utils from "../services/utils.js";
+import { getLang } from "../assets/getLang.js";
 
 const db = new Database();
 
@@ -162,6 +164,19 @@ bot.action(/^like_toggle_/, async ctx => {
     search.updateBeatMessage(ctx, ctx.callbackQuery.from.id, beat_page, search_type);
     ctx.answerCbQuery();
 });
+
+bot.action(/^set_language_/, async ctx => {
+    const newLocale = ctx.callbackQuery.data.split("_").slice(-1)[0];
+    const user = await db.getUser(ctx.callbackQuery.from.id);
+
+    await user.setLocale(newLocale);
+
+    const lang = await getLang(newLocale);
+    const mainButtons = keyboardMarkups.mainButtons(user, lang);
+
+    ctx.deleteMessage();
+    ctx.reply(lang.languageset, mainButtons);
+})
 
 
 bot.action("delete_message", async ctx => {

@@ -2,11 +2,9 @@ import { bot } from "../bot.js";
 import { Database } from "../database/database.js";
 import * as keyboardMarkups from "../markups/keyboardMarkups.js";
 import * as inlineMarkups from "../markups/inlineMarkups.js";
-import { getLang, getAllMainButtons } from "../assets/getLang.js";
+import { getLang } from "../assets/getLang.js";
 
 const db = new Database();
-
-getAllMainButtons()
 
 bot.start(async ctx => {
     await db.addUser(ctx);

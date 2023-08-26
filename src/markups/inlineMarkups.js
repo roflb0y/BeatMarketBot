@@ -1,5 +1,4 @@
 import { Markup } from "telegraf";
-import * as utils from "../services/utils.js";
 
 export async function pageButtons(user, page, type, beat, beats) {
     return new Promise(async (resolve) => {
@@ -85,5 +84,14 @@ export async function allowContactButtons(user_id) {
         resolve(markup);
     })
 };
+
+export async function changeLangButtons(user, globalConsts) {
+    return new Promise((resolve) => {
+        let buttons = []
+        globalConsts.lang_name.forEach(item => { buttons.push([Markup.button.callback(item[1], `set_language_${item[0]}`)]) });
+
+        resolve(Markup.inlineKeyboard(buttons));
+    })
+}
 
 export const deleteMessageButton = Markup.inlineKeyboard([Markup.button.callback("Удалить это сообщение ❌", "delete_message")]);

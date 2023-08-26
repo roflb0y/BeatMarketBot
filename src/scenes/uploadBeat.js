@@ -3,6 +3,7 @@ import * as keyboardMarkups from "../markups/keyboardMarkups.js";
 import * as processBeat from '../services/processBeat.js';
 import { Database } from "../database/database.js";
 import { getBeat } from '../search/searchBeats.js';
+import { getLang } from '../assets/getLang.js';
 import * as utils from "../services/utils.js";
 
 const db = new Database(); 
@@ -19,7 +20,8 @@ export const uploadBeatScene = new Scenes.WizardScene("UPLOAD_BEAT_SCENE", //ш�
     //скячивание бита)))
     async ctx => {
         const user = await db.getUser(ctx.message.from.id);
-        const mainButtons = await keyboardMarkups.mainButtons(user);
+        const lang = getLang(user.locale);
+        const mainButtons = await keyboardMarkups.mainButtons(user, lang);
 
         if(ctx.message.text === "Отменить ❌") {
             ctx.reply("Загрузка бита отменена", mainButtons);
@@ -40,7 +42,8 @@ export const uploadBeatScene = new Scenes.WizardScene("UPLOAD_BEAT_SCENE", //ш�
     //получение названия бита
     async ctx => {
         const user = await db.getUser(ctx.message.from.id);
-        const mainButtons = await keyboardMarkups.mainButtons(user);
+        const lang = getLang(user.locale);
+        const mainButtons = await keyboardMarkups.mainButtons(user, lang);
         if (ctx.message.text === "Отменить ❌") {
             ctx.reply("Загрузка бита отменена", mainButtons);
             ctx.scene.leave();

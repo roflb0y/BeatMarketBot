@@ -40,7 +40,8 @@ export class Database {
 
     getUser(user_id) {
         return new Promise((resolve, reject) => {
-            this.db.execute(`SELECT * FROM users WHERE user_id = "${user_id.toString()}"`, (err, res, fields) => {
+            this.db.query(`SELECT * FROM users WHERE user_id = "${user_id.toString()}"`, (err, res, fields) => {
+                if (err) { console.log(err); return; } 
                 if (res.length === 0) reject(`User ${user_id} is not in db`);
                 else resolve(new User(res[0]));
             })
@@ -148,6 +149,11 @@ export class User {
         db.query(`UPDATE users SET verified = '${status}' WHERE user_id = "${this.user_id}"`);
         this.isVerified = (status == true);
     };
+
+    setLocale(locale) {
+        db.query(`UPDATE users SET user_locale = '${locale}' WHERE user_id = "${this.user_id}"`);
+        this.locale = locale;
+    }
 
     toggleLike(beat) {
         if(!this.liked.includes(beat.beat_id.toString())) this.liked.unshift(beat.beat_id)

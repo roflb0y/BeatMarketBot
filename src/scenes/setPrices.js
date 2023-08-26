@@ -2,6 +2,7 @@ import { Scenes } from 'telegraf';
 import { Database } from '../database/database.js';
 import * as keyboardMarkups from "../markups/keyboardMarkups.js";
 import { getProfile } from '../search/profile.js';
+import { getLang } from '../assets/getLang.js';
 
 const db = new Database(); 
 
@@ -14,7 +15,8 @@ export const setPricesScene = new Scenes.WizardScene("SET_PRICES_SCENE",
         if(ctx.callbackQuery) { return }
 
         const user = await db.getUser(ctx.message.from.id);
-        const mainButtons = await keyboardMarkups.mainButtons(user);
+        const lang = await getLang(user.locale);
+        const mainButtons = await keyboardMarkups.mainButtons(user, lang);
         if (ctx.message.text === "Отменить ❌") {
             ctx.reply("Отменено", mainButtons);
             ctx.scene.leave();

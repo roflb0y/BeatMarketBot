@@ -13,16 +13,26 @@ export function getLang(locale) {
     return JSON.parse(fs.readFileSync(__dirname + `/lang/ru.json`, "utf-8").toJSON());
 }
 
-export function getAllMainButtons() {
-    let result = {"recent_beats":[], "my_profile":[], "random_beat":[], "fav_beats":[], "upload_beat":[]}
-    const langs = fs.readdirSync(__dirname + "/lang");
+export function getGlobalConsts() {
+    let result = {"recent_beats":[], "my_profile":[], "random_beat":[], "fav_beats":[], "upload_beat":[], "cancel":[], "lang_name":[]}
+
+    const langsPath = __dirname + "\\lang";
+    const langs = fs.readdirSync(langsPath);
+
     langs.forEach((file) => {
-        const parsed = JSON.parse(fs.readFileSync(path.resolve(file), "utf-8"));
-        result.recent_beats.push(parsed["recent_beats"]);
-        result.my_profile.push(parsed["my_profile"]);
-        result.random_beat.push(parsed["random_beat"]);
-        result.fav_beats.push(parsed["fav_beats"]);
-        result.upload_beat.push(parsed["upload_beat"]);
+        const langPath = langsPath + "\\" + file;
+        const langName = file.slice(0, -5);
+        const parsedLang = JSON.parse(fs.readFileSync(langPath, "utf-8"));
+
+        result.recent_beats.push(parsedLang.mainButtons.recent_beats);
+        result.my_profile.push(parsedLang.mainButtons.my_profile);
+        result.random_beat.push(parsedLang.mainButtons.random_beat);
+        result.fav_beats.push(parsedLang.mainButtons.fav_beats);
+        result.upload_beat.push(parsedLang.mainButtons.upload_beat);
+        result.cancel.push(parsedLang.cancel);
+        result.lang_name.push([langName, parsedLang.language]);
+
+        console.log("Found language", file);
     });
-    console.log(result);
+    return result;
 }
