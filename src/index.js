@@ -4,7 +4,7 @@ import 'telegraf';
 process.on("unhandledRejection", (error) => console.log(error));
 process.on("uncaughtException", (error) => console.log(error));
 
-import "./commands/start.js";
+import "./commands/commands.js";
 import "./handlers/message.js";
 import "./handlers/inlineQuery.js";
 

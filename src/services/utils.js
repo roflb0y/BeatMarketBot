@@ -10,48 +10,48 @@ export function deleteBeat(filepath) {
     fs.unlinkSync(filepath);
 }
 
-export function timeSince(date) {
+export function timeSince(date, lang) {
     // thanks Sky Sanders from stackoverflow
     let seconds = Math.floor((new Date() - date) / 1000);
     let interval = seconds / 31536000;
   
     if (interval > 1) {
-      return Math.floor(interval) + " " + numDeclination(Math.floor(interval), "год", "года", "лет");
+      return Math.floor(interval) + " " + numDeclination(Math.floor(interval), lang.declensions.years);
     }
     interval = seconds / 2592000;
     if (interval > 1) {
-      return Math.floor(interval) + " " + numDeclination(Math.floor(interval), "месяц", "месяца", "месяцев");
+      return Math.floor(interval) + " " + numDeclination(Math.floor(interval), lang.declensions.months);
     }
     interval = seconds / 86400;
     if (interval > 1) {
-      return Math.floor(interval) + " " + numDeclination(Math.floor(interval), "день", "дня", "дней");
+      return Math.floor(interval) + " " + numDeclination(Math.floor(interval), lang.declensions.days);
     }
     interval = seconds / 3600;
     if (interval > 1) {
-      return Math.floor(interval) + " " + numDeclination(Math.floor(interval), "час", "часа", "часов");
+      return Math.floor(interval) + " " + numDeclination(Math.floor(interval), lang.declensions.hours);
     }
     interval = seconds / 60;
     if (interval > 1) {
-      return Math.floor(interval) + " " + numDeclination(Math.floor(interval), "минуту", "минуты", "минут");
+      return Math.floor(interval) + " " + numDeclination(Math.floor(interval), lang.declensions.minutes);
     }
-    return Math.floor(seconds) + " " + numDeclination(Math.floor(interval), "секунду", "секунды", "секунд");
+    return Math.floor(seconds) + " " + numDeclination(Math.floor(interval), lang.declensions.seconds);
 }
 
 // склонение числительных или типа того ну типо минут минуты минуту
-function numDeclination(num, one, two, five) {
+function numDeclination(num, declensions) {
     let n = Math.abs(num);
     n %= 100;
     if (n >= 5 && n <= 20) {
-      return five;
+      return declensions[2];
     }
     n %= 10;
     if (n === 1) {
-      return one;
+      return declensions[0];
     }
     if (n >= 2 && n <= 4) {
-      return two;
+      return declensions[1];
     }
-    return five;
+    return declensions[2];
 }
 
 export function parseLikes(data) {
@@ -66,8 +66,8 @@ export function dumpLikes(data) {
   return data.join("|") + splitter;
 }
 
-export function getTimeSince(date) {
-  return parseUploadDate(date) + " \\| " + timeSince(date) + " назад";
+export function getTimeSince(date, lang) {
+  return parseUploadDate(date) + " \\| " + timeSince(date, lang) + lang.basic_messages.ago;
 }
 
 export function parseUploadDate(date) {

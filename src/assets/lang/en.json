@@ -1,6 +1,7 @@
 {
     "language": "English 🇬🇧",
     "languageset": "English language is set",
+
     "startMessage": "Hi! Welcome to BeatMarket!",
     "mainButtons": {
         "recent_beats": "Recent beats 🕘",
@@ -17,5 +18,26 @@
         "change_prices": "Change beat prices",
         "apply_verification": "Apply for verification"
     },
-    "cancel": "Cancel ❌"
+    "basic_messages": {
+        "ago": " ago",
+        "cancel": "Cancel ❌",
+        "delete": "Delete 🗑",
+        "delete_message": "Delete this message ❌",
+        "delete_beat_confirmation": "*Are you sure you want to delete this beat?*"
+    },
+
+    "beat_deleted": "*Following beat has been deleted:*",
+    "no_fav_beats": "You have no favourite beats",
+
+    "beat": ["*Author:*", "*Upload date:*"],
+    "beat_buttons": ["Contact author 👩‍💻", "Delete beat 🗑"],
+
+    "declensions": {
+        "seconds": ["second", "seconds", "seconds"],
+        "minutes": ["minute", "minutes", "minutes"],
+        "hours": ["hour", "hours", "hours"],
+        "days": ["day", "days", "days"],
+        "months": ["month", "months", "months"],
+        "years": ["year", "years", "years"]
+    }
 }

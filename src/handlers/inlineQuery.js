@@ -37,18 +37,22 @@ bot.action("profile_set_prices", async ctx => {
 
 bot.action(/^delete_beat/, async ctx => {
     const user = await db.getUser(ctx.callbackQuery.from.id);
+    const lang = await getLang(user.locale);
+
     const beat_id = ctx.callbackQuery.data.split("_").slice(-1)[0];
     const beat = await db.getBeat(beat_id);
 
     if (beat === false) return;
     if (!(beat.author_id === ctx.callbackQuery.from.id.toString()) && !user.isAdmin) return;
 
-    const inlineButtons = await inlineMarkups.deleteBeatButtons(beat_id);
-    ctx.replyWithMarkdownV2("*Вы действительно хотите удалить этот бит?*", inlineButtons);
+    const inlineButtons = await inlineMarkups.deleteBeatButtons(beat_id, lang);
+    ctx.replyWithMarkdownV2(lang.basic_messages.delete_beat_confirmation, inlineButtons);
 });
 
 bot.action(/^confirm_delete_beat_/, async ctx => {
     const user = await db.getUser(ctx.callbackQuery.from.id);
+    const lang = getLang(user.locale);
+
     const beat_id = ctx.callbackQuery.data.split("_").slice(-1)[0];
     const beat = await db.getBeat(beat_id);
 
@@ -59,7 +63,7 @@ bot.action(/^confirm_delete_beat_/, async ctx => {
     utils.deleteBeat(beat_filepath);
 
     ctx.deleteMessage();
-    ctx.replyWithMarkdownV2(`*Бит "${beat.title}" удален*`, inlineMarkups.deleteMessageButton);
+    ctx.replyWithMarkdownV2(`${lang.beat_deleted} ${beat.title}`, inlineMarkups.deleteMessageButton(lang));
 });
 
 bot.action(/^contact_/, async ctx => {
@@ -74,6 +78,8 @@ bot.action(/^confirm_contact_/, async ctx => {
     let author_id, beat_id;
 
     const user = await db.getUser(ctx.callbackQuery.from.id);
+    const lang = await getLang(user.locale);
+
     [author_id, beat_id] = ctx.callbackQuery.data.split("_").slice(-2);
     const inlineButtons = await inlineMarkups.allowContactButtons(ctx.callbackQuery.from.id);
 
@@ -89,16 +95,18 @@ bot.action(/^confirm_contact_/, async ctx => {
 })
 
 bot.action(/^allow_contact_/, async ctx => {
-    if (ctx.callbackQuery.from.username === undefined) {
-        ctx.reply("Укажите юзернейм в своем аккаунте Телеграма чтобы пользователь смог с вами связаться.", inlineMarkups.deleteMessageButton);
-        return;
-    }
     const user_id = ctx.callbackQuery.data.split("_").slice(-1)[0];
     const user = await db.getUser(user_id);
+    const lang = await getLang(user.locale);
+
+    if (ctx.callbackQuery.from.username === undefined) {
+        ctx.reply("Укажите юзернейм в своем аккаунте Телеграма чтобы пользователь смог с вами связаться.", inlineMarkups.deleteMessageButton(lang));
+        return;
+    }
+    
     const author = await db.getUser(ctx.callbackQuery.from.id);
 
     ctx.editMessageText(`Вы приняли запрос на переписку. Ваш аккаунт отправлен пользователю ${user.nickname}. Скоро он должен с вами связаться.`, ctx.chat.id, ctx.callbackQuery.message.id)
-
     ctx.sendMessage(`✅ *Битмейкер ${author.nickname} принял запрос на переписку\\.*\n\n@${ctx.callbackQuery.from.username}\n\nОтправьте ему приветственное сообщение и перешлите сообщение с интересующим вас битом`, { chat_id: user_id, parse_mode: "MarkdownV2" })
 });
 
@@ -124,8 +132,9 @@ bot.action(/^refresh_/, async ctx => {
 
 bot.action("verification_apply", async ctx => {
     const user = await db.getUser(ctx.callbackQuery.from.id);
+    const lang = await getLang(user.locale);
     
-    if (user.media_link === null) { ctx.replyWithMarkdownV2("*Укажите ссылку на свою соцсеть чтобы подать заявку*", { reply_markup: inlineMarkups.deleteMessageButton.reply_markup }); return }
+    if (user.media_link === null) { ctx.replyWithMarkdownV2("*Укажите ссылку на свою соцсеть чтобы подать заявку*", { reply_markup: inlineMarkups.deleteMessageButton(lang).reply_markup }); return }
 
     if (user.haveApplied) { ctx.reply("Вы уже подали заявку на верификацию"); return }
     if (user.isVerified) { ctx.reply("Вы уже верифицированы"); return }
@@ -148,6 +157,8 @@ bot.action(/^like_toggle_/, async ctx => {
     beat_page = Number(beat_page);
 
     const user = await db.getUser(ctx.callbackQuery.from.id);
+    const lang = await getLang(user.locale);
+
     const beats = await db.getBeats(search_type, user);
     const beat = beats[beat_page];
 
@@ -157,7 +168,7 @@ bot.action(/^like_toggle_/, async ctx => {
 
     if(beats.length === 1) {
         ctx.deleteMessage();
-        ctx.reply("Вы не лайкнули ни одного бита", inlineMarkups.deleteMessageButton);
+        ctx.reply("Вы не лайкнули ни одного бита", inlineMarkups.deleteMessageButton(lang));
         return;
     }
 

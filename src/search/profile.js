@@ -11,8 +11,11 @@ export async function getProfile(ctx) {
     const lang = await getLang(user.locale);
 
     const uploaded_beats = await db.getBeatsByUserCount(user);
-    const verifStatus = user.isVerified ? "✅" : "❌";
-    const joined_ago = utils.getTimeSince(user.join_date);
+
+    let verifStatus = user.isVerified ? "✅" : "❌";
+    if (user.haveApplied) verifStatus = "🕗";
+
+    const joined_ago = utils.getTimeSince(user.join_date, lang);
     const preparedPrices = utils.prepareString(user.prices);
 
     const inlineButtons = await inlineMarkups.profileButtons(user, lang);

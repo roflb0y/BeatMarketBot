@@ -5,7 +5,11 @@ import { setNickScene } from "./scenes/setNickname.js";
 import { setMediaLinkScene } from "./scenes/setMediaLink.js";
 import { setPricesScene } from "./scenes/setPrices.js";
 
+import { getGlobalConsts } from "./assets/getLang.js";
+
 import * as config from "./config.js";
+
+export const globalLangConsts = getGlobalConsts();
 
 export const bot = new Telegraf(config.BOT_KEY);
 bot.use(session())

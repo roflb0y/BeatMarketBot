@@ -4,6 +4,7 @@ import * as utils from "../services/utils.js";
 import * as inlineMarkups from "../markups/inlineMarkups.js";
 import * as keyboardMarkups from "../markups/keyboardMarkups.js";
 import * as actionReasons from "../assets/actionReasons.js";
+import { getLang } from "../assets/getLang.js";
 
 const db = new Database();
 
@@ -22,9 +23,10 @@ bot.action(/^application_/, async ctx => {
     let zalupa, action, user_id;
     [zalupa, action, user_id] = ctx.callbackQuery.data.split("_");
 
-    const user = await db.getUser(user_id)
+    const user = await db.getUser(user_id);
+    const lang = await getLang(user.locale);
 
-    if (!user.haveApplied) { ctx.editMessageText(`Заявка уже была рассмотрена другим модератором\nСтатус верификации пользователя ${user.nickname}: ${user.isVerified}`, inlineMarkups.deleteMessageButton); return }
+    if (!user.haveApplied) { ctx.editMessageText(`Заявка уже была рассмотрена другим модератором\nСтатус верификации пользователя ${user.nickname}: ${user.isVerified}`, inlineMarkups.deleteMessageButton(lang)); return }
 
     if (action === "apply") {
         ctx.editMessageText(`✅ Заявка пользователя ${user.nickname} одобрена`);

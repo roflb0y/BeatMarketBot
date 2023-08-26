@@ -1,3 +1,4 @@
+import { getLang } from "../assets/getLang.js";
 import { Database } from "../database/database.js";
 import * as inlineMarkups from "../markups/inlineMarkups.js";
 import * as utils from "../services/utils.js";
@@ -7,15 +8,16 @@ const db = new Database();
 
 export async function getBeat(ctx, user_id, page, type) {
     const user = await db.getUser(user_id);
+    const lang = await getLang(user.locale);
     
     const beats = await db.getBeats(type, user);
     const beat = beats[page]; 
     
-    const upload_date = utils.getTimeSince(beat.upload_date);
+    const upload_date = utils.getTimeSince(beat.upload_date, lang);
     const author = await db.getUser(beat.author_id);
     const preparedPrices = utils.prepareString(author.prices)
 
-    const cap = `*Автор:* ${author.nickname}\n\n*${preparedPrices}*\n\n*Дата загрузки:* ${upload_date}\n\@beat\\_market\\_bot`;
+    const cap = `${lang.beat[0]} ${author.nickname}\n\n*${preparedPrices}*\n\n${lang.beat[1]} ${upload_date}\n\@beat\\_market\\_bot`;
 
     let beat_path;
     let f;
@@ -24,7 +26,7 @@ export async function getBeat(ctx, user_id, page, type) {
     if (beat.telegram_id != null) { beat_path = beat.telegram_id; f = await Input.fromFileId(beat.telegram_id) }
     else { beat_path = `./beats/b${beat.beat_id}.m4a`; f = await Input.fromLocalFile(beat_path, beat.title) }
 
-    const inlineButtons = await inlineMarkups.pageButtons(user, page, type, beat, beats);
+    const inlineButtons = await inlineMarkups.pageButtons(user, page, type, beat, beats, lang);
 
     //есле типо страницк перелистнули а не через команду поиск начали чтобы сообщение замениолсь а не новое отправилось
     if (ctx.callbackQuery) {

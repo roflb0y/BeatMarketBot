@@ -1,6 +1,6 @@
 import { Markup } from "telegraf";
 
-export async function pageButtons(user, page, type, beat, beats) {
+export async function pageButtons(user, page, type, beat, beats, lang) {
     return new Promise(async (resolve) => {
         let prev_button = "⏪";
         let prev_data = `page_${page - 1}_${type}`;
@@ -15,29 +15,23 @@ export async function pageButtons(user, page, type, beat, beats) {
         const isLiked = user.liked.includes(beat.beat_id.toString()) ? "❤" : "🖤";
 
         const markup = Markup.inlineKeyboard([
-            [Markup.button.callback("Связаться с битмейкером", `contact_${beat.author_id}_${beat.beat_id}`, (user.user_id === beat.author_id))],
+            [Markup.button.callback(lang.beat_buttons[0], `contact_${beat.author_id}_${beat.beat_id}`, (user.user_id === beat.author_id))],
             [Markup.button.callback(prev_button, prev_data),
             Markup.button.callback(`${page + 1}/${beats.length}`, "none"),
             Markup.button.callback(next_button, next_data),
             Markup.button.callback("🔁", `refresh_${page}_${type}`)],
             [Markup.button.callback(`${isLiked} ${likeCount}`, `like_toggle_${page}_${type}`)],
-            [Markup.button.callback("Удалить бит", `delete_beat_${beat.beat_id}`, !(user.user_id === beat.author_id || user.isAdmin))]
+            [Markup.button.callback(lang.beat_buttons[1], `delete_beat_${beat.beat_id}`, !(user.user_id === beat.author_id || user.isAdmin))]
         ]);
     
         resolve(markup);
     });
 };
 
-export async function deleteBeatButtons(beat_id) {
-    return new Promise((resolve) => {
-        const markup = Markup.inlineKeyboard([
-            Markup.button.callback("Удалить", `confirm_delete_beat_${beat_id}`),
-            Markup.button.callback("Отмена", "delete_message")
-        ]);
-
-        resolve(markup);
-    })
-};
+export const deleteBeatButtons = (beat_id, lang) => Markup.inlineKeyboard([
+    Markup.button.callback(lang.basic_messages.delete, `confirm_delete_beat_${beat_id}`),
+    Markup.button.callback(lang.basic_messages.cancel, "delete_message")
+]);
 
 export const profileButtons = (user, lang) => Markup.inlineKeyboard([
     [Markup.button.callback(lang.profileButtons.change_nickname, "profile_set_nick", (user.isVerified || user.haveApplied)),
@@ -94,4 +88,4 @@ export async function changeLangButtons(user, globalConsts) {
     })
 }
 
-export const deleteMessageButton = Markup.inlineKeyboard([Markup.button.callback("Удалить это сообщение ❌", "delete_message")]);
+export const deleteMessageButton = lang => Markup.inlineKeyboard([Markup.button.callback(lang.basic_messages.delete_message, "delete_message")]);

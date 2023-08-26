@@ -29,7 +29,7 @@ export function getGlobalConsts() {
         result.random_beat.push(parsedLang.mainButtons.random_beat);
         result.fav_beats.push(parsedLang.mainButtons.fav_beats);
         result.upload_beat.push(parsedLang.mainButtons.upload_beat);
-        result.cancel.push(parsedLang.cancel);
+        result.cancel.push(parsedLang.basic_messages.cancel);
         result.lang_name.push([langName, parsedLang.language]);
 
         console.log("Found language", file);

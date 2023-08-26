@@ -1,4 +1,4 @@
-import { bot } from "../bot.js";
+import { bot, globalLangConsts } from "../bot.js";
 import { Database } from "../database/database.js";
 import * as keyboardMarkups from "../markups/keyboardMarkups.js";
 import * as inlineMarkups from "../markups/inlineMarkups.js";
@@ -14,4 +14,12 @@ bot.start(async ctx => {
     const mainButtons = keyboardMarkups.mainButtons(user, lang);
 
     ctx.reply(lang.startMessage, mainButtons);
+});
+
+bot.command("lang", async ctx => {
+    const user = await db.getUser(ctx.message.from.id);
+    const inlineButtons = await inlineMarkups.changeLangButtons(user, globalLangConsts);
+
+    ctx.reply("Choose language", inlineButtons);
+    return;
 });
