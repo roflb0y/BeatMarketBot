@@ -168,7 +168,7 @@ bot.action(/^like_toggle_/, async ctx => {
 
     if(beats.length === 1) {
         ctx.deleteMessage();
-        ctx.reply("Вы не лайкнули ни одного бита", inlineMarkups.deleteMessageButton(lang));
+        ctx.reply(lang.no_fav_beats, inlineMarkups.deleteMessageButton(lang));
         return;
     }
 

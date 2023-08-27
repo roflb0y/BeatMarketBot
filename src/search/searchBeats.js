@@ -11,7 +11,7 @@ export async function getBeat(ctx, user_id, page, type) {
     const lang = await getLang(user.locale);
     
     const beats = await db.getBeats(type, user);
-    const beat = beats[page]; 
+    const beat = beats[page];
     
     const upload_date = utils.getTimeSince(beat.upload_date, lang);
     const author = await db.getUser(beat.author_id);
@@ -31,13 +31,13 @@ export async function getBeat(ctx, user_id, page, type) {
     //есле типо страницк перелистнули а не через команду поиск начали чтобы сообщение замениолсь а не новое отправилось
     if (ctx.callbackQuery) {
         ctx.editMessageMedia({ media: f, type: "audio", caption: cap, parse_mode: "MarkdownV2" }, inlineButtons)
-            .then((msg) => { if(beat.telegram_id === null) beat.insertTelegramId(msg.audio.file_id) })
-            .catch(() => {});
+            .then((msg) => { if(beat.telegram_id === null) beat.insertTelegramId(msg.audio.file_id); })
+            .catch(() => { console.log("Failed sending audio", e) });
     }
     else { 
         ctx.replyWithAudio(f, { caption: cap, parse_mode: "MarkdownV2", reply_markup: inlineButtons.reply_markup })
             .then((msg) => { if(beat.telegram_id === null) beat.insertTelegramId(msg.audio.file_id) })
-            .catch(() => {});;
+            .catch((e) => { console.log("Failed sending audio", e) });
     }
 };
 

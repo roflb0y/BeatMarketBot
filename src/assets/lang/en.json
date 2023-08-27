@@ -31,6 +31,16 @@
 
     "beat": ["*Author:*", "*Upload date:*"],
     "beat_buttons": ["Contact author 👩‍💻", "Delete beat 🗑"],
+    "beat_upload": {
+        "cancelled": "Upload cancelled",
+        "send_beat": "Send the beat in MP3 format. The file size should not exceed 20MB",
+        "resend_format": "Send audio in MP3 format",
+        "resend_size": "The file size should not exceed 20MB",
+        "send_title": "Send the name of your beat",
+        "downloading": "Downloading beat...",
+        "processing": "Processing...",
+        "uploaded": "Beat uploaded"
+    },
 
     "declensions": {
         "seconds": ["second", "seconds", "seconds"],
