@@ -69,7 +69,10 @@ bot.action(/^confirm_delete_beat_/, async ctx => {
 bot.action(/^contact_/, async ctx => {
     let author_id, beat_id;
     [author_id, beat_id] = ctx.callbackQuery.data.split("_").slice(-2);
-    const inlineButtons = inlineMarkups.contactConfirmButtons(author_id, beat_id);
+    
+    const user = await db.getUser(ctx.callbackQuery.from.id);
+    const lang = await getLang(user.locale)
+    const inlineButtons = inlineMarkups.contactConfirmButtons(author_id, beat_id, lang);
 
     ctx.reply("Вы уверены что хотите отправить битмейкеру запрос на переписку?", inlineButtons);
 });
@@ -81,7 +84,7 @@ bot.action(/^confirm_contact_/, async ctx => {
     const lang = await getLang(user.locale);
 
     [author_id, beat_id] = ctx.callbackQuery.data.split("_").slice(-2);
-    const inlineButtons = await inlineMarkups.allowContactButtons(ctx.callbackQuery.from.id);
+    const inlineButtons = inlineMarkups.allowContactButtons(ctx.callbackQuery.from.id, lang);
 
     const beat = await db.getBeat(beat_id);
 

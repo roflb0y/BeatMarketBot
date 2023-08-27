@@ -41,14 +41,14 @@ export const profileButtons = (user, lang) => Markup.inlineKeyboard([
     [Markup.button.callback(lang.profileButtons.apply_verification, "verification_apply", (user.isVerified || user.haveApplied))]
 ]);
 
-export const verificationConfirmButtons = Markup.inlineKeyboard([
-    Markup.button.callback("Подать заявку", "verification_apply_confirm"),
-    Markup.button.callback("Отмена", "delete_message")
+export const verificationConfirmButtons = lang => Markup.inlineKeyboard([
+    Markup.button.callback(lang.basic_messages.submit, "verification_apply_confirm"),
+    Markup.button.callback(lang.basic_messages.cancel, "delete_message")
 ]);
 
-export const contactConfirmButtons = (author_id, beat_id) => Markup.inlineKeyboard([
-    Markup.button.callback("✅ Отправить запрос", `confirm_contact_${author_id}_${beat_id}`),
-    Markup.button.callback("❌ Отмена", "delete_message")
+export const contactConfirmButtons = (author_id, beat_id, lang) => Markup.inlineKeyboard([
+    Markup.button.callback(lang.basic_messages.send_request, `confirm_contact_${author_id}_${beat_id}`),
+    Markup.button.callback(lang.basic_messages.cancel, "delete_message")
 ]);
 
 export const applicationCheckButtons = (user_id) => Markup.inlineKeyboard([
@@ -56,28 +56,17 @@ export const applicationCheckButtons = (user_id) => Markup.inlineKeyboard([
     Markup.button.callback("Отклонить", `application_deny_${user_id}`)
 ]);
 
-export async function denyVerificationReasons(user_id) {
-    return new Promise((resolve) => {
-        const markup = Markup.inlineKeyboard([
-            [Markup.button.callback("Некорректно введеные данные", `denyreasons_0_${user_id}`)],
-            [Markup.button.callback("Невозможно связаться", `denyreasons_1_${user_id}`)],
-            [Markup.button.callback("Нет ответа за 24 часа", `denyreasons_2_${user_id}`)]
-        ]);
+export const denyVerificationReasons = (user_id) => Markup.inlineKeyboard([
+    [Markup.button.callback("Некорректно введеные данные", `denyreasons_0_${user_id}`)],
+    [Markup.button.callback("Невозможно связаться", `denyreasons_1_${user_id}`)],
+    [Markup.button.callback("Нет ответа за 24 часа", `denyreasons_2_${user_id}`)]
+]);
 
-        resolve(markup);
-    })
-}
 
-export async function allowContactButtons(user_id) {
-    return new Promise((resolve) => {
-        const markup = Markup.inlineKeyboard([
-            Markup.button.callback("Принять", `allow_contact_${user_id}`),
-            Markup.button.callback("Отклонить", `deny_contact_${user_id}`)
-        ]);
-
-        resolve(markup);
-    })
-};
+export const allowContactButtons = (user_id, lang) => Markup.inlineKeyboard([
+    Markup.button.callback(lang.basic_messages.accept, `allow_contact_${user_id}`),
+    Markup.button.callback(lang.basic_messages.deny, `deny_contact_${user_id}`)
+]);
 
 export async function changeLangButtons(user, globalConsts) {
     return new Promise((resolve) => {

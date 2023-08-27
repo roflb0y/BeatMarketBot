@@ -1,4 +1,5 @@
 import { Scenes } from 'telegraf';
+import { globalLangConsts } from '../bot.js';
 import { Database } from '../database/database.js';
 import * as keyboardMarkups from "../markups/keyboardMarkups.js";
 import { getProfile } from '../search/profile.js';
@@ -17,8 +18,9 @@ export const setNickScene = new Scenes.WizardScene("SET_NICK_SCENE",
         const user = await db.getUser(ctx.message.from.id);
         const lang = await getLang(user.locale);
         const mainButtons = await keyboardMarkups.mainButtons(user, lang);
-        if (ctx.message.text === "Отменить ❌") {
-            ctx.reply("Отменено", mainButtons);
+        
+        if (globalLangConsts.cancel.includes(ctx.message.text)) {
+            ctx.reply(lang.basic_messages.cancelled, mainButtons);
             ctx.scene.leave();
             return;
         }

@@ -11,6 +11,7 @@
         "change_lang": "Change language 📝",
         "upload_beat": "Upload beat 🎵"
     },
+
     "profile": ["💼 *Your profile*:", "👩‍💻 *Nickname:*", "🌏 *Social media:*", "🧭 *Verification:*", "☁️ *Uploaded beats:*", "*Beat prices:*", "*First bot launch:*"],
     "profileButtons": {
         "change_nickname": "Change nickname",
@@ -18,10 +19,25 @@
         "change_prices": "Change beat prices",
         "apply_verification": "Apply for verification"
     },
+    "profileActions": {
+        "send_social": "Send new social media link",
+        "send_nickname": "Send new nickname",
+        "send_prices": "Send the prices for your beats in this form:\n\nLeasing - 500 RUB\nFull rights - 1000 RUB\nExclusive - 1500 RUB",
+        "resend_social": "Send the correct link",
+        "social_changed": "Social media link changed",
+        "nickname_changed": "Nickname changed",
+        "prices_changed": "Prices changed"
+    },
+
     "basic_messages": {
         "ago": " ago",
         "cancel": "Cancel ❌",
+        "cancelled": "Cancelled ❌",
+        "send_request": "Send request ✅",
+        "submit": "Submit ✅",
         "delete": "Delete 🗑",
+        "accept": "Accept",
+        "deny": "Deny",
         "delete_message": "Delete this message ❌",
         "delete_beat_confirmation": "*Are you sure you want to delete this beat?*"
     },

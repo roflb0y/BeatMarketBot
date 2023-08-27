@@ -1,4 +1,5 @@
 import { Scenes } from 'telegraf';
+import { globalLangConsts } from '../bot.js';
 import { Database } from '../database/database.js';
 import * as keyboardMarkups from "../markups/keyboardMarkups.js";
 import { getProfile } from '../search/profile.js';
@@ -19,18 +20,18 @@ export const setMediaLinkScene = new Scenes.WizardScene("SET_MEDIA_LINK_SCENE",
         const lang = await getLang(user.locale);
         const mainButtons = keyboardMarkups.mainButtons(user, lang);
 
-        if (ctx.message.text === "Отменить ❌") {
-            ctx.reply("Отменено", mainButtons);
+        if (globalLangConsts.cancel.includes(ctx.message.text)) {
+            ctx.reply(lang.basic_messages.cancelled, mainButtons);
             ctx.scene.leave();
             return;
         }
         if (!utils.isValidUrl(ctx.message.text)) {
-            ctx.reply("Отправь корректную ссылку")
+            ctx.reply(lang.profileActions.resend_social)
             return;
         }
         user.setMediaLink(ctx.message.text);
 
-        ctx.reply("Ссылка изменена", mainButtons);
+        ctx.reply(lang.profileActions.social_changed, mainButtons);
         getProfile(ctx);
         ctx.scene.leave();
     }
