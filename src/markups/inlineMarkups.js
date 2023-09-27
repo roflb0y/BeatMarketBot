@@ -21,7 +21,7 @@ export async function pageButtons(user, page, type, beat, beats, lang) {
             Markup.button.callback(next_button, next_data),
             Markup.button.callback("🔁", `refresh_${page}_${type}`)],
             [Markup.button.callback(`${isLiked} ${likeCount}`, `like_toggle_${page}_${type}`)],
-            [Markup.button.callback(lang.beat_buttons[1], `delete_beat_${beat.beat_id}`, !(user.user_id === beat.author_id || user.isAdmin))]
+            [Markup.button.callback(lang.beat_buttons[2], `edit_beat_${beat.beat_id}`, !(user.user_id === beat.author_id || user.isAdmin))]
         ]);
     
         resolve(markup);
@@ -29,16 +29,23 @@ export async function pageButtons(user, page, type, beat, beats, lang) {
 };
 
 export const deleteBeatButtons = (beat_id, lang) => Markup.inlineKeyboard([
-    Markup.button.callback(lang.basic_messages.delete, `confirm_delete_beat_${beat_id}`),
-    Markup.button.callback(lang.basic_messages.cancel, "delete_message")
+    [Markup.button.callback(lang.basic_messages.delete, `confirm_delete_beat_${beat_id}`)],
+    [Markup.button.callback("← Назад", `edit_beat_${beat_id}`)]
 ]);
+
+export const editBeatButtons = (user, beat, lang) => Markup.inlineKeyboard([
+    [Markup.button.callback(lang.beat_edit.change_title, `beatedit_changetitle_${beat.beat_id}`),
+    Markup.button.callback((beat.unlisted ? lang.beat_edit.set_public : lang.beat_edit.set_unlisted), `beatedit_togglevisibility_${beat.beat_id}`)],
+    [Markup.button.callback(lang.beat_buttons[1], `delete_beat_${beat.beat_id}`, !(user.user_id === beat.author_id || user.isAdmin))]
+])
 
 export const profileButtons = (user, lang) => Markup.inlineKeyboard([
     [Markup.button.callback(lang.profileButtons.change_nickname, "profile_set_nick", (user.isVerified || user.haveApplied)),
     Markup.button.callback(lang.profileButtons.change_social, "profile_set_media_link", (user.isVerified || user.haveApplied))],
 
     [Markup.button.callback(lang.profileButtons.change_prices, "profile_set_prices")], 
-    [Markup.button.callback(lang.profileButtons.apply_verification, "verification_apply", (user.isVerified || user.haveApplied))]
+    [Markup.button.callback(lang.profileButtons.apply_verification, "verification_apply", (user.isVerified || user.haveApplied))],
+    [Markup.button.callback("Мои биты", "mybeats", !user.isVerified)]
 ]);
 
 export const verificationConfirmButtons = lang => Markup.inlineKeyboard([

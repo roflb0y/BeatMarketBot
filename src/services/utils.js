@@ -111,3 +111,8 @@ function formatString(string, params) {
     return typeof params[index] !== 'undefined' ? params[index] : match;
   });
 }
+
+export function getLogDate() {
+  const date = new Date()
+  return date.toLocaleString()
+}

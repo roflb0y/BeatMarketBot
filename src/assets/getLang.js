@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from 'path';
 import { fileURLToPath } from 'url';
+import * as log from "../services/logger.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -32,7 +33,7 @@ export function getGlobalConsts() {
         result.cancel.push(parsedLang.basic_messages.cancel);
         result.lang_name.push([langName, parsedLang.language]);
 
-        console.log("Found language", file);
+        log.debug(`Found language: ${langName}`, file);
     });
     return result;
 }

@@ -16,7 +16,7 @@ export const setPricesScene = new Scenes.WizardScene("SET_PRICES_SCENE",
 
         const user = await db.getUser(ctx.message.from.id);
         const lang = await getLang(user.locale);
-        const mainButtons = await keyboardMarkups.mainButtons(user, lang);
+        const mainButtons = keyboardMarkups.mainButtons(user, lang);
         if (ctx.message.text === "Отменить ❌") {
             ctx.reply("Отменено", mainButtons);
             ctx.scene.leave();

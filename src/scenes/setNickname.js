@@ -17,8 +17,8 @@ export const setNickScene = new Scenes.WizardScene("SET_NICK_SCENE",
         
         const user = await db.getUser(ctx.message.from.id);
         const lang = await getLang(user.locale);
-        const mainButtons = await keyboardMarkups.mainButtons(user, lang);
-        
+        const mainButtons = keyboardMarkups.mainButtons(user, lang);
+
         if (globalLangConsts.cancel.includes(ctx.message.text)) {
             ctx.reply(lang.basic_messages.cancelled, mainButtons);
             ctx.scene.leave();

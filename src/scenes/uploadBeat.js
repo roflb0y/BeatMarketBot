@@ -22,10 +22,10 @@ export const uploadBeatScene = new Scenes.WizardScene("UPLOAD_BEAT_SCENE", //ш�
     //получение битп
     async ctx => {
         if(ctx.callbackQuery) return;
-        
+
         const user = await db.getUser(ctx.message.from.id);
         const lang = getLang(user.locale);
-        const mainButtons = await keyboardMarkups.mainButtons(user, lang);
+        const mainButtons = keyboardMarkups.mainButtons(user, lang);
 
         if(globalLangConsts.cancel.includes(ctx.message.text)) {
             ctx.reply(lang.beat_upload.cancelled, mainButtons);

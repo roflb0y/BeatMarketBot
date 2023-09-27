@@ -34,13 +34,13 @@ bot.action(/^application_/, async ctx => {
         user.setApplied(0);
         user.setVerified(1);
 
-        const mainButtons = await keyboardMarkups.mainButtons(user);
+        const mainButtons = keyboardMarkups.mainButtons(user, lang);
         bot.telegram.sendMessage(user_id, "✅ Ваша заявка на верификацию одобрена\n\nЖелаем успешных продаж в BeatMarket!", mainButtons);
         return;
     }
 
     if (action === "deny") {
-        const inlineButtons = await inlineMarkups.denyVerificationReasons(user_id);
+        const inlineButtons = inlineMarkups.denyVerificationReasons(user_id);
         ctx.editMessageText(`Выберите причину отклонения заявки`, inlineButtons);
 
         return;

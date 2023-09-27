@@ -17,8 +17,6 @@ bot.action(/^page/, async ctx => {
     search.getBeat(ctx, ctx.callbackQuery.from.id, Number(page), type);
 });
 
-
-
 bot.action("profile_set_nick", async ctx => {
     ctx.scene.enter("SET_NICK_SCENE");
     ctx.answerCbQuery();
@@ -45,8 +43,56 @@ bot.action(/^delete_beat/, async ctx => {
     if (beat === false) return;
     if (!(beat.author_id === ctx.callbackQuery.from.id.toString()) && !user.isAdmin) return;
 
-    const inlineButtons = await inlineMarkups.deleteBeatButtons(beat_id, lang);
-    ctx.replyWithMarkdownV2(lang.basic_messages.delete_beat_confirmation, inlineButtons);
+    const inlineButtons = inlineMarkups.deleteBeatButtons(beat_id, lang);
+    ctx.editMessageText(lang.basic_messages.delete_beat_confirmation, {reply_markup: inlineButtons.reply_markup, parse_mode: "MarkdownV2"});
+});
+
+bot.action(/^edit_beat/, async ctx => {
+    const user = await db.getUser(ctx.callbackQuery.from.id);
+    const lang = await getLang(user.locale);
+
+    const beat_id = ctx.callbackQuery.data.split("_").slice(-1)[0];
+    const beat = await db.getBeat(beat_id);
+    
+    const beat_visibility = beat.unlisted ? "Скрыт 🔒" : "Открыт 👁‍🗨";
+
+    if (beat === false) return;
+    if (!(beat.author_id === ctx.callbackQuery.from.id.toString()) && !user.isAdmin) return;
+
+    const inlineButtons = inlineMarkups.editBeatButtons(user, beat, lang);
+    const replystr = `Изменение бита: *${utils.prepareString(beat.title)}*\nПараметры доступа: *${beat_visibility}*`;
+
+    if (!ctx.callbackQuery.message.audio) {
+        ctx.editMessageText(replystr, {reply_markup: inlineButtons.reply_markup, parse_mode: "MarkdownV2"});
+    } else {
+        ctx.replyWithMarkdownV2(replystr, inlineButtons);
+    }
+});
+
+bot.action(/^beatedit/, async ctx => {
+    let jopa, action, beat_id;
+    [jopa, action, beat_id] = ctx.callbackQuery.data.split("_");
+
+    const user = await db.getUser(ctx.callbackQuery.from.id);
+    const lang = await getLang(user.locale);
+
+    const beat = await db.getBeat(beat_id);
+
+    if (beat === false) {
+        ctx.editMessageText("Этот бит был удален", {reply_markup: inlineMarkups.deleteMessageButton.reply_markup});
+        return;
+    }
+    
+
+    const beat_visibility = beat.unlisted ? "Открыт 👁‍🗨" : "Скрыт 🔒";
+
+    if (action === "togglevisibility") {
+        beat.togglevisibility();
+        const inlineButtons = inlineMarkups.editBeatButtons(user, beat, lang);
+
+        ctx.editMessageText(`Изменение бита: *${utils.prepareString(beat.title)}*\nПараметры доступа: *${beat_visibility}*`, {reply_markup: inlineButtons.reply_markup, parse_mode: "MarkdownV2"})
+        ctx.answerCbQuery();
+    }
 });
 
 bot.action(/^confirm_delete_beat_/, async ctx => {
@@ -120,7 +166,7 @@ bot.action(/^deny_contact_/, async ctx => {
 
     ctx.editMessageText(`Вы отклонили запрос на переписку с ${user.nickname}.`, ctx.chat.id, ctx.callbackQuery.message.id);
     ctx.sendMessage(`❌ *Битмейкер ${author.nickname} отклонил ваш запрос на переписку\\.*`, { chat_id: user_id, parse_mode: "MarkdownV2" });
-})
+});
 
 
 bot.action(/^refresh_/, async ctx => {
@@ -141,7 +187,7 @@ bot.action("verification_apply", async ctx => {
 
     if (user.haveApplied) { ctx.reply("Вы уже подали заявку на верификацию"); return }
     if (user.isVerified) { ctx.reply("Вы уже верифицированы"); return }
-    ctx.replyWithMarkdownV2("*Вы действительно хотите подать заявку на верификацию?*\n\nПроверьте чтобы с Вами можно было связаться через указанную соцсеть\\.\n\nВы не сможете изменить данные своего профиля в случае одобрения заявки, и пока она рассматривается\\. Рассмотрение занимает от 2 минут до 24 часов\\.", inlineMarkups.verificationConfirmButtons)
+    ctx.replyWithMarkdownV2("*Вы действительно хотите подать заявку на верификацию?*\n\nПроверьте чтобы с Вами можно было связаться через указанную соцсеть\\.\n\nВы не сможете изменить данные своего профиля в случае одобрения заявки, и пока она рассматривается\\. Рассмотрение занимает от 2 минут до 24 часов\\.", inlineMarkups.verificationConfirmButtons(lang))
 });
 
 bot.action("verification_apply_confirm", async ctx => {
@@ -190,6 +236,10 @@ bot.action(/^set_language_/, async ctx => {
 
     ctx.deleteMessage();
     ctx.reply(lang.languageset, mainButtons);
+});
+
+bot.action("mybeats", async ctx => {
+    search.getBeat(ctx, ctx.from.id, 0, "myBeats", true);
 })
 
 

@@ -46,7 +46,7 @@
     "no_fav_beats": "You have no favourite beats",
 
     "beat": ["*Author:*", "*Upload date:*"],
-    "beat_buttons": ["Contact author 👩‍💻", "Delete beat 🗑"],
+    "beat_buttons": ["Contact author 👩‍💻", "Delete beat 🗑", "Edit beat ⚙"],
     "beat_upload": {
         "cancelled": "Upload cancelled",
         "send_beat": "Send the beat in MP3 format. The file size should not exceed 20MB",
@@ -56,6 +56,11 @@
         "downloading": "Downloading beat...",
         "processing": "Processing...",
         "uploaded": "Beat uploaded"
+    },
+    "beat_edit": {
+        "change_title": "Edit title 📜",
+        "set_unlisted": "Set unlisted 🔒",
+        "set_public": "Set published 👁‍🗨"
     },
 
     "declensions": {

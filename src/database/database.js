@@ -1,6 +1,7 @@
 import mysql from "mysql2";
 import * as config from "../config.js";
 import * as utils from "../services/utils.js";
+import * as log from "../services/logger.js";
 
 const db = mysql.createConnection({
     host: config.MYSQL_HOST,
@@ -11,14 +12,15 @@ const db = mysql.createConnection({
 
 db.connect((err) => {
     if (err) {
-        console.log("Connection to db failed");
-        console.log(err)
+        log.error("Connection to db failed");
+        log.error(err);
+        return;
     }
-    else console.log("Connected to db")
-})
+    log.debug("Connected to db");
+});
 
-process.on("unhandledRejection", (error) => console.log(error));
-process.on("uncaughtException", (error) => console.log(error));
+process.on("unhandledRejection", (error) => log.error("Unhandled rejection:", error));
+process.on("uncaughtException", (error) => log.error("Uncaught exception:", error));
 
 export class Database {
     db = db;
@@ -29,7 +31,7 @@ export class Database {
             .then((user) => resolve())
             .catch((err) => {
                 this.db.query(`INSERT INTO users(user_id, nickname, liked, user_locale) VALUES ("${ctx.message.from.id.toString()}", "${ctx.message.from.first_name}", "", "${ctx.from.language_code}")`, (err, res, fields) => { 
-                    console.log(`Inserted new user ${ctx.message.from.id.toString()} | ${new Date().toString()}`)
+                    log.info(`Inserted new user ${ctx.message.from.id.toString()}`)
                     resolve() 
                 });
                 
@@ -41,7 +43,7 @@ export class Database {
     getUser(user_id) {
         return new Promise((resolve, reject) => {
             this.db.query(`SELECT * FROM users WHERE user_id = "${user_id.toString()}"`, (err, res, fields) => {
-                if (err) { console.log(err); return; } 
+                if (err) { log.error(err); return; } 
                 if (res.length === 0) reject(`User ${user_id} is not in db`);
                 else resolve(new User(res[0]));
             })
@@ -51,7 +53,7 @@ export class Database {
     addBeat(data, author_id) {
         return new Promise((resolve, reject) => {
             this.db.query(`INSERT INTO beats(author_id, title, tags) VALUES ("${author_id}", "${data.title}", "")`, (err, res, fields) => {
-                console.log(`Uploaded new beat | Id: ${res.insertId} | ${new Date().toString()}`);
+                log.info(`Uploaded new beat | Id: ${res.insertId}`);
                 resolve(res.insertId);
             });
         });
@@ -61,7 +63,7 @@ export class Database {
         switch (type) {
             case "recent":
                 return new Promise((resolve, reject) => {
-                    this.db.query("SELECT * FROM beats ORDER BY beat_id DESC", (err, res, fields) => resolve(res.map(beat => new Beat(beat))));
+                    this.db.query("SELECT * FROM beats WHERE unlisted = 0 ORDER BY beat_id DESC", (err, res, fields) => resolve(res.map(beat => new Beat(beat))));
                 });
             case "myLiked":
                 return new Promise((resolve, reject) => {
@@ -72,6 +74,10 @@ export class Database {
                         this.db.query(`SELECT * FROM beats WHERE beat_id IN(${beatsList})`, (err, res, fields) => resolve(res.map(beat => new Beat(beat))))
                     }
                 )});
+            case "myBeats":
+                return new Promise((resolve, reject) => {
+                    this.db.query(`SELECT * FROM beats WHERE author_id = "${user.user_id}"`, (err, res, fields) => { resolve(res.map(beat => new Beat(beat))) })
+                });
         }
         
     };
@@ -175,6 +181,7 @@ export class Beat {
         this.upload_date = beat.upload_date;
         this.title = beat.title;
         this.tags = beat.tags;
+        this.unlisted = (beat.unlisted == true);
         this.telegram_id = beat.telegram_id;
     };
 
@@ -185,12 +192,18 @@ export class Beat {
 
     deleteBeat() {
         db.query(`DELETE FROM beats WHERE beat_id = ${this.beat_id}`);
-        console.log(`Beat ${this.beat_id} deleted | ${new Date().toString()}`);
+        log.info(`Beat ${this.beat_id} deleted`);
     };
 
     async getLikesCount() {
         return new Promise((resolve) => {
             db.query(`SELECT COUNT(*) FROM users WHERE liked LIKE \'%${this.beat_id}%\'`, (err, res, fields) => { resolve(res[0]["COUNT(*)"]) })
         })
+    };
+
+    togglevisibility() {
+        const newValue = this.unlisted ? 0 : 1;
+        db.query(`UPDATE beats SET unlisted = ${newValue} WHERE beat_id = ${this.beat_id}`);
+        this.unlisted = !this.unlisted;
     }
 }

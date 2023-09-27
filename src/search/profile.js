@@ -18,7 +18,7 @@ export async function getProfile(ctx) {
     const joined_ago = utils.getTimeSince(user.join_date, lang);
     const preparedPrices = utils.prepareString(user.prices);
 
-    const inlineButtons = await inlineMarkups.profileButtons(user, lang);
+    const inlineButtons = inlineMarkups.profileButtons(user, lang);
     const replystr = `${lang.profile[0]}\n\n${lang.profile[1]} ${user.nickname}\n${lang.profile[2]} ${utils.prepareString(user.media_link)}\n${lang.profile[3]} ${verifStatus}\n${lang.profile[4]} ${uploaded_beats}\n\n${lang.profile[5]}\n${preparedPrices}\n\n${lang.profile[6]} ${joined_ago}`;
 
     ctx.replyWithMarkdownV2(replystr, inlineButtons);
